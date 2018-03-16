@@ -1,0 +1,249 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Bio430\_exercise1},
+            pdfauthor={Cheryl},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\usepackage[normalem]{ulem}
+% avoid problems with \sout in headers with hyperref:
+\pdfstringdefDisableCommands{\renewcommand{\sout}{}}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+  \title{Bio430\_exercise1}
+  \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \author{Cheryl}
+  \preauthor{\centering\large\emph}
+  \postauthor{\par}
+  \predate{\centering\large\emph}
+  \postdate{\par}
+  \date{3/16/2018}
+
+
+\begin{document}
+\maketitle
+
+\subsection{MSCI/BIO430 Bioinformatics Computing Exercise
+I}\label{mscibio430-bioinformatics-computing-exercise-i}
+
+\section{Goals:}\label{goals}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Practice basic unix commands
+\item
+  Log onto an ftp site from the terminal
+\item
+  Download files from an ftp site
+\item
+  Unzip the files and concatenate (combine) them together into a single
+  file
+\end{enumerate}
+
+\section{Background:}\label{background}
+
+We will eventually be downloading our rockfish sequences from the UCB
+Genome Center ftp site. The format of RNAseq files is called FASTQ.
+These are basically really big texts files that provide us the sequence
+information, including ID, nucleotide sequence, and quality of each
+nucleotide read from the Illumina HiSeq machine in ASCII format. You can
+find more info here: \url{http://en.wikipedia.org/wiki/FASTQ_format}.
+
+You will need to remotely log-in to the UCB ftp site using terminal,
+download the sequences, and place them into a designated folder on your
+computer. There will be multiple files for each individual fish that we
+will have to combine (or concatenate) them into a single file.
+
+Today, we will go through a basic exercise to practice how to do this
+using human FASTQ sequences from the 1000 genomes project
+(\url{http://www.1000genomes.org/data}). Our practice data are real
+Illumina sequences from an anonymous woman in Great Britain.
+
+\subsection{Exercise:}\label{exercise}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Open terminal in RStudio (or terminal if you have a Mac)
+\item
+  Navigate to your desktop using \texttt{cd}
+\item
+  Make a new directory on your desktop called `FASTQ' using
+  \texttt{mkdir}
+\item
+  Navigate to an ftp site where we will download some practice sequence
+  files: You will use the command \texttt{ftp}. Type:
+\end{enumerate}
+
+\texttt{ftp\ ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/data/HG00099/sequence\_read/}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\item
+  Look at the files in the directory using \texttt{ls}
+\item
+  Look for these two files: SRR765993.filt.fastq.gz
+  SRR741412.filt.fastq.gz
+\end{enumerate}
+
+Download files from an ftp site using a command called \texttt{get}.
+{[}If you wanted to download multiple files that all ended with .gz you
+would use a command called mget and a wildcard expression:
+\texttt{\textgreater{}\ mget\ *.gz{]}}. Today we will download files one
+by one using get:
+
+\texttt{ftp\textgreater{}\ get\ \textquotesingle{}filename\textquotesingle{}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{6}
+\tightlist
+\item
+  Close the ftp site using \texttt{quit}
+\end{enumerate}
+
+\texttt{ftp\textgreater{}\ quit}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{7}
+\item
+  Doublecheck that your 2 files are in your FASTQ directory using
+  \texttt{ls}
+\item
+  These files are in a compressed format ending with .gz. Use
+  \texttt{gunzip} to unzip each file (or use the following wildcard
+  command *.gz to download all files in a folder that end with.gz):
+\end{enumerate}
+
+\texttt{gunzip\ \textquotesingle{}filename\textquotesingle{}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{9}
+\item
+  Use \texttt{ls} to verify that the files are unzipped (they should now
+  end with .fastq instead of .gz)
+\item
+  Now, combine the two files use a command called \texttt{cat}:
+\end{enumerate}
+
+\texttt{cat\ filename1\ filename2\ \textgreater{}\ newcombinedfile.fastq}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{11}
+\item
+  Open the header (top portion) of the file using \texttt{less}
+\item
+  Hit \texttt{q} to quit viewing the file
+\item
+  Check to see if your concatenation worked using \texttt{ls\ -lh} to
+  see if the new file is twice the size of the original files (l means
+  long format; h means human readable)
+\end{enumerate}
+
+\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textsubscript{\sout{BREAK}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}\textsubscript{\textsubscript{\textsubscript{\textsubscript{\textasciitilde{}}}}}}\textasciitilde{}\textasciitilde{}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{14}
+\item
+  Open the header of the file again. You'll see groups of 4 lines that
+  represent a single sequence. FASTQ files normally use four lines per
+  sequence.
+
+  Line 1 begins with a `@' character and is followed by a sequence
+  identifier and an optional description (like a FASTA title line). Line
+  2 is the raw sequence letters. Line 3 begins with a `+' character and
+  is optionally followed by the same sequence identifier (and any
+  description) again. Line 4 encodes the quality values for the sequence
+  in Line 2, and must contain the same number of symbols as letters in
+  the sequence.
+\end{enumerate}
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi}.}
+\tightlist
+\item
+  How long are each of the sequences in your concatenated file?
+\item
+  Try BLASTing one sequence against the NCBI database to see what gene
+  it is:
+  \url{http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn\&PAGE_TYPE=BlastSearch\&LINK_LOC=blasthome}
+\item
+  What gene is it?
+\end{enumerate}
+
+
+\end{document}
