@@ -42,7 +42,9 @@ from an anonymous woman in Great Britain.
 4. Navigate to an ftp site where we will download some practice sequence files:
 You will use the command `ftp`. Type:
 
-`ftp ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/data/HG00099/sequence_read/`
+```{bash}
+ftp ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/data/HG00099/sequence_read/
+```
 
 5. Look at the files in the directory using `ls` 
 
@@ -55,27 +57,50 @@ to download multiple files that all ended  with .gz you would use a command
 called mget and a wildcard expression: `> mget *.gz]`. Today we will download 
 files one by one using get:
 
-`ftp> get 'filename'`
+```{bash}
+get SRR765993.filt.fastq.gz
+get SRR741412.filt.fastq.gz
+```
 
 7. Close the ftp site using `quit`
 
-`ftp> quit`
+```{bash}
+quit
+```
 
-8. Doublecheck that your 2 files are in your FASTQ directory using `ls`
+8.Remind yourself where you are using `pwd`. Doublecheck that your 2 files are in your FASTQ directory using `ls`
+
+```{bash}
+pwd
+ls
+```
 
 9. These files are in a compressed format ending with .gz. Use `gunzip`
 to unzip each file (or use the following wildcard command *.gz to download
 all files in a folder that end with.gz):
 
-`gunzip 'filename'`
+```{bash}
+gunzip SRR765993.filt.fastq.gz
+gunzip SRR741412.filt.fastq.gz
+```
 
 10. Use `ls` to verify that the files are unzipped (they should now end with .fastq instead of .gz)
 
+```{bash}
+ls
+```
+
 11. Now, combine the two files use a command called `cat`:
 
-`cat filename1 filename2 > newcombinedfile.fastq`
+```{bash}
+cat SRR765993.filt.fastq SRR741412.filt.fastq > combined.fastq
+```
 
 12. Open the header (top portion) of the file using `less`
+
+```{bash}
+less combined.fastq
+```
 
 13. Hit `q` to quit viewing the file 
 
