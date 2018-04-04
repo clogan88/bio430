@@ -127,7 +127,7 @@ $(document).ready(function () {
 
 <div id="mapping-to-the-copper-de-novo-transcriptome" class="section level2">
 <h2>Mapping to the Copper de novo transcriptome</h2>
-<p>Use RSEM and bowtie for mapping</p>
+<p>Use RSEM and bowtie for mapping on treebeard. Be sure you are in the QC folder and the samples_file_trimmo is located within it</p>
 <pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \       # name of program
 --transcripts /home/data/rockfish/assemblies/Copper_Trinity_LT.fasta --seqType fq \ # assembly and seq type
 --samples_file /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo \  # samples_file location
