@@ -60,7 +60,7 @@ mv CLMP001T_S71_L005_R1_001.fastq ScaurGillMP_M_768.fastq
 
 ## Create samples_file
 
-We will also need to need make a tab delimited samples_file to tell the stastical program which samples are from which treatment
+We will also need to need make a tab delimited samples_file to tell the stastical program which samples are from which treatment. First open `nano` by typing it on the command line and hitting enter.
 
 ```{bash, eval=FALSE}
 control control_rep1  ScaurGillMP_C_586.fastq
@@ -85,22 +85,3 @@ relaxation  relaxation_rep3 ScaurGillMP_R_690.fastq
 relaxation  relaxation_rep4 ScaurGillMP_R_785.fastq
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
