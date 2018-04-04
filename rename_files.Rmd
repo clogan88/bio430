@@ -1,0 +1,106 @@
+---
+title: "Rename files"
+author: "Cheryl Logan"
+date: "4/4/2018"
+output: html_document
+---
+
+## Let's look at our file names
+
+The file names we get back from the sequencing facility look like this:
+```{bash, eval=FALSE}
+CLMP001A_S52_L005_R1_001.fastq
+CLMP001B_S53_L005_R1_001.fastq
+CLMP001C_S54_L005_R1_001.fastq
+CLMP001D_S55_L005_R1_001.fastq
+CLMP001E_S56_L005_R1_001.fastq
+CLMP001F_S57_L005_R1_001.fastq
+CLMP001G_S58_L005_R1_001.fastq
+CLMP001H_S59_L005_R1_001.fastq
+CLMP001I_S60_L005_R1_001.fastq
+CLMP001J_S61_L005_R1_001.fastq
+CLMP001K_S62_L005_R1_001.fastq
+CLMP001L_S63_L005_R1_001.fastq
+CLMP001M_S64_L005_R1_001.fastq
+CLMP001N_S65_L005_R1_001.fastq
+CLMP001O_S66_L005_R1_001.fastq
+CLMP001P_S67_L005_R1_001.fastq
+CLMP001Q_S68_L005_R1_001.fastq
+CLMP001R_S69_L005_R1_001.fastq
+CLMP001S_S70_L005_R1_001.fastq
+CLMP001T_S71_L005_R1_001.fastq
+```
+
+## Use the `mv` function to rename
+
+We will rename them to include species (Sebastes caurinus = Copper rockfish), tissue type (gill), experiment (MP =  Melissa P's experiment), treatment (C= control, M= moderate, E= extreme, U= upwelling, and R=relazation) and individual ID # using the `mv` function
+
+```{bash, eval=FALSE}
+mv CLMP001A_S52_L005_R1_001.fastq ScaurGillMP_U_666.fastq
+mv CLMP001B_S53_L005_R1_001.fastq ScaurGillMP_R_706.fastq
+mv CLMP001C_S54_L005_R1_001.fastq ScaurGillMP_C_586.fastq
+mv CLMP001D_S55_L005_R1_001.fastq ScaurGillMP_C_598.fastq
+mv CLMP001E_S56_L005_R1_001.fastq ScaurGillMP_E_626.fastq
+mv CLMP001F_S57_L005_R1_001.fastq ScaurGillMP_E_614.fastq
+mv CLMP001G_S58_L005_R1_001.fastq ScaurGillMP_C_601.fastq
+mv CLMP001H_S59_L005_R1_001.fastq ScaurGillMP_U_663.fastq
+mv CLMP001I_S60_L005_R1_001.fastq ScaurGillMP_R_784.fastq
+mv CLMP001J_S61_L005_R1_001.fastq ScaurGillMP_U_680.fastq
+mv CLMP001K_S62_L005_R1_001.fastq ScaurGillMP_M_650.fastq
+mv CLMP001L_S63_L005_R1_001.fastq ScaurGillMP_E_615.fastq
+mv CLMP001M_S64_L005_R1_001.fastq ScaurGillMP_R_690.fastq
+mv CLMP001N_S65_L005_R1_001.fastq ScaurGillMP_R_785.fastq
+mv CLMP001O_S66_L005_R1_001.fastq ScaurGillMP_E_616.fastq
+mv CLMP001P_S67_L005_R1_001.fastq ScaurGillMP_M_645.fastq
+mv CLMP001Q_S68_L005_R1_001.fastq ScaurGillMP_M_767.fastq
+mv CLMP001R_S69_L005_R1_001.fastq ScaurGillMP_C_751.fastq
+mv CLMP001S_S70_L005_R1_001.fastq ScaurGillMP_U_679.fastq
+mv CLMP001T_S71_L005_R1_001.fastq ScaurGillMP_M_768.fastq
+```
+
+## Create samples_file
+
+We will also need to need make a tab delimited samples_file to tell the stastical program which samples are from which treatment
+
+```{bash, eval=FALSE}
+control control_rep1  ScaurGillMP_C_586.fastq
+control control_rep2  ScaurGillMP_C_598.fastq
+control control_rep3  ScaurGillMP_C_601.fastq
+control control_rep4  ScaurGillMP_C_751.fastq
+moderate  moderate_rep1 ScaurGillMP_M_650.fastq
+moderate  moderate_rep2 ScaurGillMP_M_645.fastq
+moderate  moderate_rep3 ScaurGillMP_M_767.fastq
+moderate  moderate_rep4 ScaurGillMP_M_768.fastq
+extreme extreme_rep1  ScaurGillMP_E_626.fastq
+extreme extreme_rep2  ScaurGillMP_E_614.fastq
+extreme extreme_rep3  ScaurGillMP_E_615.fastq
+extreme extreme_rep4  ScaurGillMP_E_616.fastq
+upwelling upwelling_rep1 ScaurGillMP_U_666.fastq  
+upwelling upwelling_rep2 ScaurGillMP_U_663.fastq 
+upwelling upwelling_rep3 ScaurGillMP_U_680.fastq
+upwelling upwelling_rep4 ScaurGillMP_U_679.fastq
+relaxation  relaxation_rep1 ScaurGillMP_R_706.fastq
+relaxation  relaxation_rep2 ScaurGillMP_R_784.fastq
+relaxation  relaxation_rep3 ScaurGillMP_R_690.fastq
+relaxation  relaxation_rep4 ScaurGillMP_R_785.fastq
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
