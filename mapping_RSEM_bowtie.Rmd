@@ -19,11 +19,31 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \   
 
 ## Build Transcript and Gene Expression Matrices
 
+first make a file.listing_target_files.txt using `nano`
+
+
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/util/abundance_estimates_to_matrix.pl \
 --est_method RSEM \
+--name_sample_by_basedir \   # name 'RSEM.genes.results' file by base directory
 control_rep1/RSEM.genes.results control_rep2/RSEM.genes.results control_rep3/RSEM.genes.results control_rep4/RSEM.genes.results \
 moderate_rep1/RSEM.genes.results moderate_rep2/RSEM.genes.results moderate_rep3/RSEM.genes.results moderate_rep4/RSEM.genes.results \
 extreme_rep1/RSEM.genes.results extreme_rep2/RSEM.genes.results extreme_rep3/RSEM.genes.results extreme_rep4/RSEM.genes.results \
 relaxation_rep1/RSEM.genes.results relaxation_rep2/RSEM.genes.results relaxation_rep3/RSEM.genes.results relaxation_rep4/RSEM.genes.results \
 upwelling_rep1/RSEM.genes.results upwelling_rep2/RSEM.genes.results upwelling_rep3/RSEM.genes.results upwelling_rep4/RSEM.genes.results 
+```
+
+## Download the output files to github 430 repo 
+
+matrix.counts.matrix
+matrix.TMM.EXPR.matrix
+matrix.TPM.not_cross_norm
+matrix.TPM.not_cross_norm.TMM_info.txt
+
+First, open a new terminal window on home computer and use `scp` to secure copy these files to the bio430 github repository
+
+```{bash, eval=FALSE}
+scp loga8761s@treebeard.csumb.edu:/home/data/rockfish/EXP10_Scaur_fluct_gill/QC/*matrix* /Users/loga8761/github/bio430  # use * wildcard to get all files with 'matrix'
+```
+
+## From here, we will work in Rstudio 
