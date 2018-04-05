@@ -26,4 +26,4 @@ control_rep1/RSEM.genes.results control_rep2/RSEM.genes.results control_rep3/RSE
 moderate_rep1/RSEM.genes.results moderate_rep2/RSEM.genes.results moderate_rep3/RSEM.genes.results moderate_rep4/RSEM.genes.results \
 extreme_rep1/RSEM.genes.results extreme_rep2/RSEM.genes.results extreme_rep3/RSEM.genes.results extreme_rep4/RSEM.genes.results \
 relaxation_rep1/RSEM.genes.results relaxation_rep2/RSEM.genes.results relaxation_rep3/RSEM.genes.results relaxation_rep4/RSEM.genes.results \
-upwelling_rep1/RSEM.genes.results upwelling_rep2/RSEM.genes.results upwelling_rep3/RSEM.genes.results upwelling_rep4/RSEM.genes.results \
+upwelling_rep1/RSEM.genes.results upwelling_rep2/RSEM.genes.results upwelling_rep3/RSEM.genes.results upwelling_rep4/RSEM.genes.results 
