@@ -125,73 +125,102 @@ $(document).ready(function () {
 </div>
 
 
-<div id="mapping-to-the-copper-de-novo-transcriptome" class="section level2">
-<h2>Mapping to the Copper de novo transcriptome</h2>
-<p>Use RSEM and bowtie for mapping on treebeard. Be sure you are in the QC folder and the samples_file_trimmo is located within it</p>
-<pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \       # name of program
---transcripts /home/data/rockfish/assemblies/Copper_Trinity_LT.fasta --seqType fq \ # assembly and seq type
---samples_file /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo \  # samples_file location
---est_method RSEM --aln_method bowtie --trinity_mode \                              # counting and mapping method
---output_dir rsem_outdir                                                            # output directory</code></pre>
-</div>
-<div id="build-transcript-and-gene-expression-matrices" class="section level2">
-<h2>Build Transcript and Gene Expression Matrices</h2>
-<p>first make a file.listing_target_files.txt using <code>nano</code></p>
+<div id="mapping-and-counting" class="section level1">
+<h1>Mapping and Counting</h1>
+<p>We will map and count using 2 different assemblies: 1. Copper muscle OA de novo transcriptome (cite: Hamilton et al. 2017) 2. Copper gill Hypoxia de novo transcriptome (cite: Logan, pers comm)</p>
+<p>For this step, we will use two programs to map to the assembly and quantify the number of transcripts expressed in each sample (bowtie and RSEM). We will run this code on treebeard because mapping is a computationally intenstive step. Be sure you are in the QC directory with the XXXtrimmo.fastq files and the samples_file_trimmo.</p>
+<ol style="list-style-type: decimal">
+<li>First, map to the Copper muscle OA de novo transcriptome:</li>
+</ol>
+<pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \
+--transcripts /home/data/rockfish/assemblies/Copper_Trinity_LT.fasta --seqType fq \
+--samples_file /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo \
+--est_method RSEM --aln_method bowtie --trinity_mode \
+--output_dir RSEM_Copper_Trinity_LT 
+</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Second, map to the Copper gill Hypoxia de novo transcriptome</li>
+</ol>
+<pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \
+--transcripts /home/data/rockfish/assemblies/CGH_Trinity_CL.fasta --seqType fq \
+--samples_file /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo \
+--est_method RSEM --prep_reference --aln_method bowtie --trinity_mode \
+--output_dir CGH_Trinity_CL.fasta                               </code></pre>
+<div id="build-counts-matrix-and-perform-differential-expression-analysis" class="section level2">
+<h2>Build counts matrix and perform differential expression analysis</h2>
+<p>These steps need to be performed SEPARATELY using the output files from each assembly completed above.</p>
+<ol style="list-style-type: decimal">
+<li>Build Transcript and Gene Expression Matrices</li>
+</ol>
+<p>note: can also make a file.listing_target_files.txt using <code>nano</code></p>
 <pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/util/abundance_estimates_to_matrix.pl \
 --est_method RSEM \
---name_sample_by_basedir \   # name 'RSEM.genes.results' file by base directory
+--name_sample_by_basedir \
 control_rep1/RSEM.genes.results control_rep2/RSEM.genes.results control_rep3/RSEM.genes.results control_rep4/RSEM.genes.results \
 moderate_rep1/RSEM.genes.results moderate_rep2/RSEM.genes.results moderate_rep3/RSEM.genes.results moderate_rep4/RSEM.genes.results \
 extreme_rep1/RSEM.genes.results extreme_rep2/RSEM.genes.results extreme_rep3/RSEM.genes.results extreme_rep4/RSEM.genes.results \
 relaxation_rep1/RSEM.genes.results relaxation_rep2/RSEM.genes.results relaxation_rep3/RSEM.genes.results relaxation_rep4/RSEM.genes.results \
 upwelling_rep1/RSEM.genes.results upwelling_rep2/RSEM.genes.results upwelling_rep3/RSEM.genes.results upwelling_rep4/RSEM.genes.results </code></pre>
-</div>
-<div id="compare-replicates" class="section level2">
-<h2>Compare Replicates</h2>
+<ol start="2" style="list-style-type: decimal">
+<li>Compare Replicates</li>
+</ol>
 <pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 --matrix matrix.counts.matrix \
 --samples samples_file --CPM --log2 \
 --min_rowSums 10 \
 --compare_replicates</code></pre>
-</div>
-<div id="compare-replicates-across-samples" class="section level2">
-<h2>Compare Replicates Across Samples</h2>
+<ol start="3" style="list-style-type: decimal">
+<li>Compare Replicates Across Samples</li>
+</ol>
 <pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 --matrix Trinity_trans.counts.matrix \
 --min_rowSums 10 \
 -s samples_file --log2 --CPM --sample_cor_matrix</code></pre>
-</div>
-<div id="generate-pca-plot" class="section level2">
-<h2>Generate PCA Plot</h2>
+<ol start="4" style="list-style-type: decimal">
+<li>Generate PCA Plot</li>
+</ol>
 <pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 --matrix matrix.counts.matrix \
 -s samples_file \
 --min_rowSums 10 --log2 \
 --CPM --center_rows \
 --prin_comp 3 </code></pre>
-</div>
-<div id="run-differential-gene-expression-analysis-with-edger" class="section level2">
-<h2>Run Differential Gene Expression Analysis with edgeR</h2>
+<ol start="5" style="list-style-type: decimal">
+<li>Run Differential Gene Expression Analysis with edgeR</li>
+</ol>
 <pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/run_DE_analysis.pl  \
 --matrix matrix.counts.matrix \
 --method edgeR \
 --samples_file samples_file</code></pre>
-</div>
-<div id="identify-de-genes-with-p-val-and-fold-change-cut-off" class="section level2">
-<h2>Identify DE genes with p-val and fold change cut-off</h2>
+<ol start="6" style="list-style-type: decimal">
+<li>Identify DE genes with p-val and fold change cut-off</li>
+</ol>
+<p>This step can be run multple times using different p-values and fold-change cut-offs</p>
 <pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/analyze_diff_expr.pl \
 --matrix /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/matrix.TMM.EXPR.matrix \
 -P 0.001 \
 -C 2 \
 --samples /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file</code></pre>
-</div>
-<div id="download-the-output-files-to-github-430-repo" class="section level2">
-<h2>Download the output files to github 430 repo</h2>
+<ol start="7" style="list-style-type: decimal">
+<li>Download edgeR output files to personal computer</li>
+</ol>
 <p>First, open a new terminal window on home computer and use <code>scp</code> to secure copy these files to the bio430 github repository</p>
 <pre class="bash"><code>scp loga8761s@treebeard.csumb.edu:/home/data/rockfish/EXP10_Scaur_fluct_gill/QC/edgeR.40768.dir/* /Users/loga8761/github/bio430/edgeR.40768.dir/  # also get samples file</code></pre>
+<ol start="8" style="list-style-type: decimal">
+<li>From here, we will work in Rstudio</li>
+</ol>
 </div>
-<div id="from-here-we-will-work-in-rstudio" class="section level2">
-<h2>From here, we will work in Rstudio</h2>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p><strong>De novo assembly:</strong></p>
+<p>Hamilton, Scott L., Cheryl A. Logan, Hamilton W. Fennie, Susan M. Sogard, James P. Barry, April D. Makukhov, Lauren R. Tobosa, Kirsten Boyer, Christopher F. Lovera, and Giacomo Bernardi. “Species-specific responses of juvenile rockfish to elevated pCO2: from behavior to genomics.” PloS one 12, no. 1 (2017): e0169670.</p>
+<p><strong>Bowtie (program used for alignment of sequence files to assembly):</strong></p>
+<p>Langmead, B. (2010). Aligning short sequencing reads with Bowtie. Current protocols in bioinformatics, 11-7.</p>
+<p><strong>RSEM (program used for transcript quantification):</strong></p>
+<p>Li, B., &amp; Dewey, C. N. (2011). RSEM: accurate transcript quantification from RNA-Seq data with or without a reference genome. BMC bioinformatics, 12(1), 323.</p>
+<p><strong>edgeR (program used for differential gene expression analysis):</strong></p>
+<p>Robinson, M. D., McCarthy, D. J., &amp; Smyth, G. K. (2010). edgeR: a Bioconductor package for differential expression analysis of digital gene expression data. Bioinformatics, 26(1), 139-140.</p>
+</div>
 </div>
 
 

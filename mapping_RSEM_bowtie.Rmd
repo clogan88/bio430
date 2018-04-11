@@ -5,10 +5,15 @@ date: "4/4/2018"
 output: html_document
 ---
 
-## Mapping to the Copper muscle OA de novo transcriptome (cite: Hamilton et al. 2017)
+# Mapping  and Counting
 
-Use RSEM and bowtie for mapping on treebeard. Be sure you are in the QC folder and the samples_file_trimmo is located within it. Note that we will run all these commands on the treebeard server.
+We will map and count using 2 different assemblies:
+1. Copper muscle OA de novo transcriptome (cite: Hamilton et al. 2017)
+2. Copper gill Hypoxia de novo transcriptome (cite: Logan, pers comm)
 
+For this step, we will use two programs to map to the assembly and quantify the number of transcripts expressed in each sample (bowtie and RSEM). We will run this code on treebeard because mapping is a computationally intenstive step. Be sure you are in the QC directory with the XXXtrimmo.fastq files and the samples_file_trimmo. 
+
+1. First, map to the Copper muscle OA de novo transcriptome:
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \
 --transcripts /home/data/rockfish/assemblies/Copper_Trinity_LT.fasta --seqType fq \
@@ -18,9 +23,7 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \
 
 ```
 
-## Mapping to the Copper gill Hypoxia de novo transcriptome (cite: Logan, pers comm)
-
-Use RSEM and bowtie for mapping on treebeard. Be sure you are in the QC folder and the samples_file_trimmo is located within it. Note that we will run all these commands on the treebeard server.
+2. Second, map to the Copper gill Hypoxia de novo transcriptome
 
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \
@@ -31,9 +34,13 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \
 ```
 
 
-## Build Transcript and Gene Expression Matrices
+## Build counts matrix and perform differential expression analysis
 
-first make a file.listing_target_files.txt using `nano`
+These steps need to be performed SEPARATELY using the output files from each assembly completed above.
+
+1. Build Transcript and Gene Expression Matrices
+
+note: can also make a file.listing_target_files.txt using `nano`
 
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/util/abundance_estimates_to_matrix.pl \
@@ -46,7 +53,7 @@ relaxation_rep1/RSEM.genes.results relaxation_rep2/RSEM.genes.results relaxation
 upwelling_rep1/RSEM.genes.results upwelling_rep2/RSEM.genes.results upwelling_rep3/RSEM.genes.results upwelling_rep4/RSEM.genes.results 
 ```
 
-## Compare Replicates
+2. Compare Replicates
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 --matrix matrix.counts.matrix \
@@ -55,7 +62,7 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 --compare_replicates
 ```
 
-## Compare Replicates Across Samples
+3. Compare Replicates Across Samples
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 --matrix Trinity_trans.counts.matrix \
@@ -63,7 +70,7 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 -s samples_file --log2 --CPM --sample_cor_matrix
 ```
 
-## Generate PCA Plot
+4. Generate PCA Plot
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 --matrix matrix.counts.matrix \
@@ -73,7 +80,7 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 --prin_comp 3 
 ```
 
-## Run Differential Gene Expression Analysis with edgeR
+5. Run Differential Gene Expression Analysis with edgeR
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/run_DE_analysis.pl  \
 --matrix matrix.counts.matrix \
@@ -81,7 +88,10 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/run_DE_an
 --samples_file samples_file
 ```
 
-## Identify DE genes with p-val and fold change cut-off
+6. Identify DE genes with p-val and fold change cut-off
+
+This step can be run multple times using different p-values and fold-change cut-offs
+
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/analyze_diff_expr.pl \
 --matrix /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/matrix.TMM.EXPR.matrix \
@@ -90,7 +100,7 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/analyze_d
 --samples /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file
 ```
 
-## Download the output files to github 430 repo 
+7. Download edgeR output files to personal computer
 
 First, open a new terminal window on home computer and use `scp` to secure copy these files to the bio430 github repository
 
@@ -98,15 +108,22 @@ First, open a new terminal window on home computer and use `scp` to secure copy 
 scp loga8761s@treebeard.csumb.edu:/home/data/rockfish/EXP10_Scaur_fluct_gill/QC/edgeR.40768.dir/* /Users/loga8761/github/bio430/edgeR.40768.dir/  # also get samples file
 ```
 
-## From here, we will work in Rstudio 
+8. From here, we will work in Rstudio 
 
 ## References
 
-# De novo assembly
+**De novo assembly:**
+
 Hamilton, Scott L., Cheryl A. Logan, Hamilton W. Fennie, Susan M. Sogard, James P. Barry, April D. Makukhov, Lauren R. Tobosa, Kirsten Boyer, Christopher F. Lovera, and Giacomo Bernardi. "Species-specific responses of juvenile rockfish to elevated pCO2: from behavior to genomics." PloS one 12, no. 1 (2017): e0169670.
 
-# Bowtie (program used for alignment of sequence files to assembly)
+**Bowtie (program used for alignment of sequence files to assembly):**
+
 Langmead, B. (2010). Aligning short sequencing reads with Bowtie. Current protocols in bioinformatics, 11-7.
 
-# RSEM (program used for transcript quantification)
+**RSEM (program used for transcript quantification):**
+
 Li, B., & Dewey, C. N. (2011). RSEM: accurate transcript quantification from RNA-Seq data with or without a reference genome. BMC bioinformatics, 12(1), 323.
+
+**edgeR (program used for differential gene expression analysis):**
+
+Robinson, M. D., McCarthy, D. J., & Smyth, G. K. (2010). edgeR: a Bioconductor package for differential expression analysis of digital gene expression data. Bioinformatics, 26(1), 139-140.
