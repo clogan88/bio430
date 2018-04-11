@@ -7,7 +7,7 @@ output: html_document
 
 ## Mapping to the Copper de novo transcriptome
 
-Use RSEM and bowtie for mapping on treebeard. Be sure you are in the QC folder and the samples_file_trimmo is located within it
+Use RSEM and bowtie for mapping on treebeard. Be sure you are in the QC folder and the samples_file_trimmo is located within it. Note that we will run all these commands on the treebeard server.
 
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \       # name of program
