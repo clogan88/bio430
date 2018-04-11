@@ -5,17 +5,31 @@ date: "4/4/2018"
 output: html_document
 ---
 
-## Mapping to the Copper de novo transcriptome
+## Mapping to the Copper muscle OA de novo transcriptome (cite: Hamilton et al. 2017)
 
 Use RSEM and bowtie for mapping on treebeard. Be sure you are in the QC folder and the samples_file_trimmo is located within it. Note that we will run all these commands on the treebeard server.
 
 ```{bash, eval=FALSE}
-perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \       # name of program
---transcripts /home/data/rockfish/assemblies/Copper_Trinity_LT.fasta --seqType fq \ # assembly and seq type
---samples_file /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo \  # samples_file location
---est_method RSEM --aln_method bowtie --trinity_mode \                              # counting and mapping method
---output_dir rsem_outdir                                                            # output directory
+perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \
+--transcripts /home/data/rockfish/assemblies/Copper_Trinity_LT.fasta --seqType fq \
+--samples_file /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo \
+--est_method RSEM --aln_method bowtie --trinity_mode \
+--output_dir RSEM_Copper_Trinity_LT 
+
 ```
+
+## Mapping to the Copper gill Hypoxia de novo transcriptome (cite: Logan, pers comm)
+
+Use RSEM and bowtie for mapping on treebeard. Be sure you are in the QC folder and the samples_file_trimmo is located within it. Note that we will run all these commands on the treebeard server.
+
+```{bash, eval=FALSE}
+perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \
+--transcripts /home/data/rockfish/assemblies/CGH_Trinity_CL.fasta --seqType fq \
+--samples_file /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo \
+--est_method RSEM --prep_reference --aln_method bowtie --trinity_mode \
+--output_dir CGH_Trinity_CL.fasta                               
+```
+
 
 ## Build Transcript and Gene Expression Matrices
 
@@ -24,7 +38,7 @@ first make a file.listing_target_files.txt using `nano`
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/util/abundance_estimates_to_matrix.pl \
 --est_method RSEM \
---name_sample_by_basedir \   # name 'RSEM.genes.results' file by base directory
+--name_sample_by_basedir \
 control_rep1/RSEM.genes.results control_rep2/RSEM.genes.results control_rep3/RSEM.genes.results control_rep4/RSEM.genes.results \
 moderate_rep1/RSEM.genes.results moderate_rep2/RSEM.genes.results moderate_rep3/RSEM.genes.results moderate_rep4/RSEM.genes.results \
 extreme_rep1/RSEM.genes.results extreme_rep2/RSEM.genes.results extreme_rep3/RSEM.genes.results extreme_rep4/RSEM.genes.results \
@@ -85,3 +99,14 @@ scp loga8761s@treebeard.csumb.edu:/home/data/rockfish/EXP10_Scaur_fluct_gill/QC/
 ```
 
 ## From here, we will work in Rstudio 
+
+## References
+
+# De novo assembly
+Hamilton, Scott L., Cheryl A. Logan, Hamilton W. Fennie, Susan M. Sogard, James P. Barry, April D. Makukhov, Lauren R. Tobosa, Kirsten Boyer, Christopher F. Lovera, and Giacomo Bernardi. "Species-specific responses of juvenile rockfish to elevated pCO2: from behavior to genomics." PloS one 12, no. 1 (2017): e0169670.
+
+# Bowtie (program used for alignment of sequence files to assembly)
+Langmead, B. (2010). Aligning short sequencing reads with Bowtie. Current protocols in bioinformatics, 11-7.
+
+# RSEM (program used for transcript quantification)
+Li, B., & Dewey, C. N. (2011). RSEM: accurate transcript quantification from RNA-Seq data with or without a reference genome. BMC bioinformatics, 12(1), 323.
