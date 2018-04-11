@@ -146,11 +146,49 @@ extreme_rep1/RSEM.genes.results extreme_rep2/RSEM.genes.results extreme_rep3/RSE
 relaxation_rep1/RSEM.genes.results relaxation_rep2/RSEM.genes.results relaxation_rep3/RSEM.genes.results relaxation_rep4/RSEM.genes.results \
 upwelling_rep1/RSEM.genes.results upwelling_rep2/RSEM.genes.results upwelling_rep3/RSEM.genes.results upwelling_rep4/RSEM.genes.results </code></pre>
 </div>
+<div id="compare-replicates" class="section level2">
+<h2>Compare Replicates</h2>
+<pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
+--matrix matrix.counts.matrix \
+--samples samples_file --CPM --log2 \
+--min_rowSums 10 \
+--compare_replicates</code></pre>
+</div>
+<div id="compare-replicates-across-samples" class="section level2">
+<h2>Compare Replicates Across Samples</h2>
+<pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
+--matrix Trinity_trans.counts.matrix \
+--min_rowSums 10 \
+-s samples_file --log2 --CPM --sample_cor_matrix</code></pre>
+</div>
+<div id="generate-pca-plot" class="section level2">
+<h2>Generate PCA Plot</h2>
+<pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
+--matrix matrix.counts.matrix \
+-s samples_file \
+--min_rowSums 10 --log2 \
+--CPM --center_rows \
+--prin_comp 3 </code></pre>
+</div>
+<div id="run-differential-gene-expression-analysis-with-edger" class="section level2">
+<h2>Run Differential Gene Expression Analysis with edgeR</h2>
+<pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/run_DE_analysis.pl  \
+--matrix matrix.counts.matrix \
+--method edgeR \
+--samples_file samples_file</code></pre>
+</div>
+<div id="identify-de-genes-with-p-val-and-fold-change-cut-off" class="section level2">
+<h2>Identify DE genes with p-val and fold change cut-off</h2>
+<pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/analyze_diff_expr.pl \
+--matrix /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/matrix.TMM.EXPR.matrix \
+-P 0.001 \
+-C 2 \
+--samples /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file</code></pre>
+</div>
 <div id="download-the-output-files-to-github-430-repo" class="section level2">
 <h2>Download the output files to github 430 repo</h2>
-<p>matrix.counts.matrix matrix.TMM.EXPR.matrix matrix.TPM.not_cross_norm matrix.TPM.not_cross_norm.TMM_info.txt</p>
 <p>First, open a new terminal window on home computer and use <code>scp</code> to secure copy these files to the bio430 github repository</p>
-<pre class="bash"><code>scp loga8761s@treebeard.csumb.edu:/home/data/rockfish/EXP10_Scaur_fluct_gill/QC/*matrix* /Users/loga8761/github/bio430  # use * wildcard to get all files with 'matrix'</code></pre>
+<pre class="bash"><code>scp loga8761s@treebeard.csumb.edu:/home/data/rockfish/EXP10_Scaur_fluct_gill/QC/edgeR.40768.dir/* /Users/loga8761/github/bio430/edgeR.40768.dir/  # also get samples file</code></pre>
 </div>
 <div id="from-here-we-will-work-in-rstudio" class="section level2">
 <h2>From here, we will work in Rstudio</h2>
