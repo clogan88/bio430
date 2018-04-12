@@ -1,0 +1,15 @@
+---
+title: "merging"
+author: "Cheryl Logan"
+date: "4/12/2018"
+output: html_document
+---
+
+## Extracting annotations for your gene list of interest
+
+To do this, we will take advantage of the `tidyverse` package in RStudio. You only need to install the package once, but you do need to load the library everytime you open up RStudio on your computer. So, first install it using the `install.packages` command, then load the library using the command below:
+
+```{r setup, include=FALSE}
+library(tidyverse) # after install.packages("tidyverse")
+```
+

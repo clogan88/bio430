@@ -20,8 +20,8 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \
 --samples_file /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo \
 --est_method RSEM --aln_method bowtie --trinity_mode \
 --output_dir RSEM_Copper_Trinity_LT 
-
 ```
+Make a new directory called `RSEM_Copper_Trinity_LT` and move the output files into this directory to keep them separate from those in step 2.
 
 2. Second, map to the Copper gill Hypoxia de novo transcriptome
 
@@ -32,15 +32,13 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \
 --est_method RSEM --prep_reference --aln_method bowtie --trinity_mode \
 --output_dir CGH_Trinity_CL.fasta                               
 ```
-
+The mapping rates ranged from 85-91% for this assembly. Make a new directory called `RSEM_CGH_Trinity_CL` and move the output files into this directory to keep them separate from those in step 1.
 
 ## Build counts matrix and perform differential expression analysis
 
 These steps need to be performed SEPARATELY using the output files from each assembly completed above.
 
 1. Build Transcript and Gene Expression Matrices
-
-note: can also make a file.listing_target_files.txt using `nano`
 
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/util/abundance_estimates_to_matrix.pl \
@@ -57,7 +55,7 @@ upwelling_rep1/RSEM.genes.results upwelling_rep2/RSEM.genes.results upwelling_re
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 --matrix matrix.counts.matrix \
---samples samples_file --CPM --log2 \
+--samples /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo --CPM --log2 \
 --min_rowSums 10 \
 --compare_replicates
 ```
@@ -65,16 +63,17 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 3. Compare Replicates Across Samples
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
---matrix Trinity_trans.counts.matrix \
+--matrix matrix.counts.matrix \
 --min_rowSums 10 \
--s samples_file --log2 --CPM --sample_cor_matrix
+-s /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo \
+--log2 --CPM --sample_cor_matrix
 ```
 
 4. Generate PCA Plot
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 --matrix matrix.counts.matrix \
--s samples_file \
+-s /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo \
 --min_rowSums 10 --log2 \
 --CPM --center_rows \
 --prin_comp 3 
@@ -85,18 +84,18 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/run_DE_analysis.pl  \
 --matrix matrix.counts.matrix \
 --method edgeR \
---samples_file samples_file
+--samples_file /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo
 ```
 
 6. Identify DE genes with p-val and fold change cut-off
 
-This step can be run multple times using different p-values and fold-change cut-offs
+This step can be run multple times using different p-values and fold-change cut-offs. Before you run this command, `cd` into the edgeR directory created in the last step.
 
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/analyze_diff_expr.pl \
---matrix /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/matrix.TMM.EXPR.matrix \
--P 0.001 \
--C 2 \
+--matrix /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/RSEM_CGH_Trinity_CL/matrix.TMM.EXPR.matrix \
+-P 0.05 \
+-C 1 \
 --samples /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file
 ```
 
