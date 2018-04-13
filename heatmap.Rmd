@@ -1,0 +1,89 @@
+---
+title: "heatmap"
+author: "Cheryl"
+date: "4/13/2018"
+output: html_document
+---
+R code for Heatmaps (Copper Rockfish Gill)
+
+First, download the following packages:
+
+```{r}
+source("http://bioconductor.org/biocLite.R")
+biocLite('edgeR')
+biocLite('DESeq')
+biocLite('ctc')
+biocLite('Biobase')
+```
+
+Install necessary packages and load libraries. You only need to install the packages once, but need to load the libraries every time you open up a new R session.
+
+Select USA (CA 2) for CRAN Mirror
+```{r}
+library('ape') # after install.packages('ape')
+library('gplots') # after install.packages('gplots')
+library('XLConnect')  # after install.packages('XLConnect')
+library('RColorBrewer')
+```
+
+Display working directory (equivalent of pwd in terminal)
+
+```{r}
+getwd()
+```
+
+Change the working directory to location of your expression data file
+
+```{r}
+setwd("/Users/loga8761/Desktop/bio430")
+```
+
+Load data
+```{r}
+data = read_csv("diffExpr.P1e-3_C2.matrix.log2.centered.csv")
+data <- as.matrix(data) # convert to matrix
+```
+
+# Change parameters
+
+The following code is what makes the color key legend. For example, the code below is for a color key of range -2 to 2 (-2 to -1 is red (representing downregulation), -1 to 1 is black (representing upregulation),and 1, 2 is green (representing upregulation).
+
+```{r}
+colors = c(seq(-2,-1,length=100),seq(-1,1,length=100),seq(1,2,length=100))
+```
+ 
+
+Set the color palette for the heatmap. These are the ones we've been using, but you can try other colors. For example, in some papers I've seen many blue, black, and yellow heatmaps which is easier to see for color-blind viewers.
+
+```{r}
+my_palette <- colorRampPalette(c("red", "black", "green"))(n = 299)
+```
+
+Create a heatmap
+
+```{r}
+heatmap.2(CopperSig, col=my_palette, breaks=colors, density.info="none", trace="none", dendrogram=c("row"), symm=F, symkey=T, symbreaks=T, scale="none", sepwidth=c(0,0), margins=c(7,18), Colv=F, lwid=c(0.7,2), lhei=c(1.1,4), cexRow=0.48)
+```
+
+
+PARAMETERS:
+
+CopperSig= specifies which matrix to get the data from (in our case, CopperSig is what we named our matrix before)
+col= sets the color used for the image (my_palette was a vector previously defined in code above)
+breaks= breaks up points based on colors
+density.info= indicates whether to superimpose a 'histogram', a 'density plot', or 'none')
+trace= determines if a solid 'trace' line should be drawn across rows and down columns (can select for just 'row's and 'column's if preferred).
+dendrogram=c("row") plots a row dendrogram and reorders the rows (the original rows and columns are reordered to match the dendrogram).
+symm= indicates if matrix should be treated symmetrically (only 'T', or 'True', if matrix is square)
+symkey= indicates whether the color key should be made symmetric about 0
+symbreaks= indicates whether the breaks in the heatmap should be made symmetric about 0
+scale= indicates whether data is scaled (options are 'none', 'T', 'F')
+margins= sets the margins for the heatmap. If you want your heatmap to be longer and thinner, you make the first number in the ( ) smaller
+
+--i.e., I have it set at 7, 18 right now. I've also used 9, 14 in the past. Sometimes you just have to change those numbers around to get the
+--heatmap size desired (I made things longer when I could in order to try to be able to read the gene names, may or may not work depending on how many genes you are mapping)
+
+Colv= determines if and how the column dendrogram should be reordered. Colv=Rowv indicates that columns should be treated identically to the rows
+lwid= column width
+lhei= column height
+cexRow= adjusts font size
