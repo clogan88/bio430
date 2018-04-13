@@ -7,10 +7,38 @@ output: html_document
 
 ## Extracting annotations for your gene list of interest
 
-To do this, we will take advantage of the `tidyverse` package in RStudio. You only need to install the package once, but you do need to load the library everytime you open up RStudio on your computer. So, first install it using the `install.packages` command, then load the library using the command below:
+To do this, we will take advantage of the `tidyverse` package in RStudio. You only need to install the package once, but you will need to load the library every time you open up RStudio on your computer. So, first install it using the `install.packages` command, then load the library using the command below:
 
 ```{r setup, include=FALSE}
 library(tidyverse) # after install.packages("tidyverse")
 ```
 
-test test testt  test
+The first thing we want to do is make sure the files we want to work with are in .csv format. We have a gene list of interest and an annotation file. If the files are in text (.txt) files convert to .csv using bash like this. If they are already in .csv format, let's skip this and move on.
+
+`sed 's/ \+/,/g' ifile.txt > ofile.csv`
+
+Example:
+```{bash}
+sed 's/ \+/,/g' Exp5_CGH_Trinity_annotated.txt > Exp5_CGH_Trinity_annotated.csv
+```
+ 
+Let's say we want to extract the annotations for just our differentially expressed genes (DGElist). Now if column 2 in our two files is the sameby column 1 in bash after sorting each file:
+
+```{bash}
+sort -t , -k 1,1 big_annotation_file.csv > DGElist_sorted.csv
+sort -t , -k 1,1 big_annotation_file.csv > big_annotation_file_sorted.csv
+join -j1 big_annotation_file_sorted.csv big_annotation_file_sorted.csv > annot_DGE.csv
+```
+ 
+Now we have a much smaller file containing the annotations for our DGE list only!
+
+Now, let's read in these files to RStudio
+```{r}
+annolist <- read_csv(annot_DGE.csv, header = TRUE, sep = ",")
+genelist <- read_csv(DGElist_sorted.csv.csv, header = TRUE, sep = ",")
+```
+
+Merge data into a single data frame
+```{r}
+merged.data <- merge(genelist, annolist, by="ContigName")
+```
