@@ -127,21 +127,21 @@ $(document).ready(function () {
 
 <div id="extracting-annotations-for-your-gene-list-of-interest" class="section level2">
 <h2>Extracting annotations for your gene list of interest</h2>
-<p>To do this in R or RStudio, we will take advantage of the <code>tidyverse</code> package. You only need to install the package once, but you will need to load the library every time you open up RStudio on your computer. So, first install it using the <code>install.packages</code> command, then load the library using the command below:</p>
+<p>To do this in R or RStudio, we will take advantage of the <code>tidyverse</code> package. You only need to install the package once, but you will need to load the library every time you open up R or RStudio on your computer. So, first install it using the <code>install.packages</code> command, then load the library using the command below:</p>
 </div>
 <div id="using-bash" class="section level2">
 <h2>Using bash</h2>
 <ol style="list-style-type: decimal">
 <li>Convert .txt files to .csv files in bash</li>
 </ol>
-<p>First we’ll so this in bash and then we’ll do it again in R. The first thing we want to do is make sure the files we want to work with are in .csv format. We have two files: a gene list of interest and a really big annotation file for all the contigs in our assembly. If the files are in text (.txt) files, we need to convert to .csv using bash commands below. This will ensure we are using the same file format and plus R likes .csv files. If the files are already in .csv format, skip this step and move on.</p>
+<p>The first thing we want to do is make sure the files we want to work with are in .csv format. We have two files: a gene list of interest and a really big annotation file for all the contigs in our assembly. If the files are in text (.txt) files, we need to convert to .csv using bash commands below. This will ensure we are using the same file format (and R likes .csv files). If the files are already in .csv format, skip this step and move on.</p>
 <p><code>sed 's/ \+/,/g' ifile.txt &gt; ofile.csv</code></p>
 <p>Example:</p>
 <pre class="r"><code>sed 's/ \+/,/g' Exp5_CGH_Trinity_annotated.txt &gt; Exp5_CGH_Trinity_annotated.csv</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>Sort and join two files in bash</li>
 </ol>
-<p>Let’s say we want to extract the annotations for just our differentially expressed genes (DGElist). First we have to <code>sort</code> each .csv file by column 1. Then, we can <code>join</code> by column 1 assuming col 1 contains ContigNames:</p>
+<p>Let’s say we want to extract the annotations for just our differentially expressed genes (DGElist). First we have to <code>sort</code> each .csv file by column 1. Then, we can <code>join</code> by column 1 assuming col 1 in both files contains <code>ContigNames</code>:</p>
 <pre class="bash"><code>sort -t , -k 1,1 DGElist.csv &gt; DGElist_sorted.csv
 sort -t , -k 1,1 big_annotation_file.csv &gt; big_annotation_file_sorted.csv
 join -j1 DGElist_sorted.csv big_annotation_file_sorted.csv &gt; annot_DGE.csv</code></pre>
