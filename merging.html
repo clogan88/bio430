@@ -127,21 +127,39 @@ $(document).ready(function () {
 
 <div id="extracting-annotations-for-your-gene-list-of-interest" class="section level2">
 <h2>Extracting annotations for your gene list of interest</h2>
-<p>To do this, we will take advantage of the <code>tidyverse</code> package in RStudio. You only need to install the package once, but you will need to load the library every time you open up RStudio on your computer. So, first install it using the <code>install.packages</code> command, then load the library using the command below:</p>
-<p>The first thing we want to do is make sure the files we want to work with are in .csv format. We have a gene list of interest and an annotation file. If the files are in text (.txt) files convert to .csv using bash like this. If they are already in .csv format, let’s skip this and move on.</p>
+<p>To do this in R, we will take advantage of the <code>tidyverse</code> package. You only need to install the package once, but you will need to load the library every time you open up RStudio on your computer. So, first install it using the <code>install.packages</code> command, then load the library using the command below:</p>
+</div>
+<div id="using-bash" class="section level2">
+<h2>Using bash</h2>
+<ol style="list-style-type: decimal">
+<li>Convert .txt files to .csv files in bash</li>
+</ol>
+<p>First we’ll so this in bash and then we’ll do it again in R. The first thing we want to do is make sure the files we want to work with are in .csv format. We have two files: a gene list of interest and a really big annotation file for all the contigs in our assembly. If the files are in text (.txt) files, we need to convert to .csv using bash commands below. This will ensure we are using the same file format and plus R likes .csv files. If the files are already in .csv format, skip this step and move on.</p>
 <p><code>sed 's/ \+/,/g' ifile.txt &gt; ofile.csv</code></p>
 <p>Example:</p>
 <pre class="r"><code>sed 's/ \+/,/g' Exp5_CGH_Trinity_annotated.txt &gt; Exp5_CGH_Trinity_annotated.csv</code></pre>
-<p>Let’s say we want to extract the annotations for just our differentially expressed genes (DGElist). We can do this in bash, but first we have to sort each file by column 1. Then, we can join by column 1 assuming col 1 contains ContigNames:</p>
+<ol start="2" style="list-style-type: decimal">
+<li>Sort and join two files in bash</li>
+</ol>
+<p>Let’s say we want to extract the annotations for just our differentially expressed genes (DGElist). First we have to sort each .csv file by column 1 using <code>sort</code>. Then, we can <code>join</code> by column 1 assuming col 1 contains ContigNames:</p>
 <pre class="bash"><code>sort -t , -k 1,1 big_annotation_file.csv &gt; DGElist_sorted.csv
 sort -t , -k 1,1 big_annotation_file.csv &gt; big_annotation_file_sorted.csv
 join -j1 big_annotation_file_sorted.csv big_annotation_file_sorted.csv &gt; annot_DGE.csv</code></pre>
 <p>Now we have a much smaller file (annot_DGE.csv) containing the annotations for our DGE list only!</p>
-<p>Now, let’s read in these files to RStudio</p>
+</div>
+<div id="using-rstudio" class="section level2">
+<h2>Using RStudio</h2>
+<p>We’ve done all this in bash so far, but we can do the same join in RStudio. First, open RStudio and read in your .csv files:</p>
+<ol style="list-style-type: decimal">
+<li>Read in 2 files into R</li>
+</ol>
 <pre class="r"><code>annolist &lt;- read_csv(annot_DGE.csv)
-genelist &lt;- read_csv(DGElist_sorted.csv)</code></pre>
-<p>Merge data into a single data frame</p>
-<pre class="r"><code>merged.data &lt;- merge(genelist, annolist, by=&quot;ContigName&quot;)</code></pre>
+genelist &lt;- read_csv(newgenelist.csv)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Extract annotations from another gene list in RStudio using <code>join</code></li>
+</ol>
+<pre class="r"><code>merged &lt;- left_join(newgenelist, annolist, by = &quot;ContigName&quot;) </code></pre>
+<p>Now, we’ve essentally done the same thing in R as we did in bash, but in R we don’t have to sort before we join.</p>
 </div>
 
 

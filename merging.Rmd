@@ -7,13 +7,18 @@ output: html_document
 
 ## Extracting annotations for your gene list of interest
 
-To do this, we will take advantage of the `tidyverse` package in RStudio. You only need to install the package once, but you will need to load the library every time you open up RStudio on your computer. So, first install it using the `install.packages` command, then load the library using the command below:
+To do this in R or RStudio, we will take advantage of the `tidyverse` package. You only need to install the package once, but you will need to load the library every time you open up RStudio on your computer. So, first install it using the `install.packages` command, then load the library using the command below:
 
 ```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
 library(tidyverse) # after install.packages("tidyverse")
 ```
 
-The first thing we want to do is make sure the files we want to work with are in .csv format. We have a gene list of interest and an annotation file. If the files are in text (.txt) files convert to .csv using bash like this. If they are already in .csv format, let's skip this and move on.
+
+## Using bash
+
+1. Convert .txt files to .csv files in bash
+
+First we'll so this in bash and then we'll do it again in R. The first thing we want to do is make sure the files we want to work with are in .csv format. We have two files: a gene list of interest and a really big annotation file for all the contigs in our assembly. If the files are in text (.txt) files, we need to convert to .csv using bash commands below. This will ensure we are using the same file format and plus R likes .csv files. If the files are already in .csv format, skip this step and move on.
 
 `sed 's/ \+/,/g' ifile.txt > ofile.csv`
 
@@ -22,7 +27,9 @@ Example:
 sed 's/ \+/,/g' Exp5_CGH_Trinity_annotated.txt > Exp5_CGH_Trinity_annotated.csv
 ```
  
-Let's say we want to extract the annotations for just our differentially expressed genes (DGElist). We can do this in bash, but first we have to sort each file by column 1. Then, we can join by column 1 assuming col 1 contains ContigNames:
+2. Sort and join two files in bash
+
+Let's say we want to extract the annotations for just our differentially expressed genes (DGElist). First we have to sort each .csv file by column 1 using `sort`. Then, we can `join` by column 1 assuming col 1 contains ContigNames:
 
 ```{bash, eval=FALSE, message = FALSE, warning = FALSE}
 sort -t , -k 1,1 big_annotation_file.csv > DGElist_sorted.csv
@@ -32,13 +39,19 @@ join -j1 big_annotation_file_sorted.csv big_annotation_file_sorted.csv > annot_D
  
 Now we have a much smaller file (annot_DGE.csv) containing the annotations for our DGE list only!
 
-Now, let's read in these files to RStudio
+## Using R or RStudio
+
+We've done all this in bash so far, but we can do the same join in R or RStudio. First, open RStudio and read in your .csv files:
+
+1. Read in 2 files into R
 ```{r read files, eval=FALSE, message = FALSE, warning = FALSE}
 annolist <- read_csv(annot_DGE.csv)
-genelist <- read_csv(DGElist_sorted.csv)
+genelist <- read_csv(newgenelist.csv)
 ```
 
-Merge data into a single data frame
+2. Extract annotations from another gene list in RStudio using `join`
 ```{r merge, eval=FALSE, message = FALSE, warning = FALSE}
-merged.data <- merge(genelist, annolist, by="ContigName")
+merged <- left_join(newgenelist, annolist, by = "ContigName") 
 ```
+
+Now, we've essentally done the same thing in R as we did in bash, but in R we don't have to sort before we join. 
