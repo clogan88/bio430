@@ -127,7 +127,7 @@ $(document).ready(function () {
 
 <div id="extracting-annotations-for-your-gene-list-of-interest" class="section level2">
 <h2>Extracting annotations for your gene list of interest</h2>
-<p>To do this in R, we will take advantage of the <code>tidyverse</code> package. You only need to install the package once, but you will need to load the library every time you open up RStudio on your computer. So, first install it using the <code>install.packages</code> command, then load the library using the command below:</p>
+<p>To do this in R or RStudio, we will take advantage of the <code>tidyverse</code> package. You only need to install the package once, but you will need to load the library every time you open up RStudio on your computer. So, first install it using the <code>install.packages</code> command, then load the library using the command below:</p>
 </div>
 <div id="using-bash" class="section level2">
 <h2>Using bash</h2>
@@ -141,15 +141,15 @@ $(document).ready(function () {
 <ol start="2" style="list-style-type: decimal">
 <li>Sort and join two files in bash</li>
 </ol>
-<p>Let’s say we want to extract the annotations for just our differentially expressed genes (DGElist). First we have to sort each .csv file by column 1 using <code>sort</code>. Then, we can <code>join</code> by column 1 assuming col 1 contains ContigNames:</p>
-<pre class="bash"><code>sort -t , -k 1,1 big_annotation_file.csv &gt; DGElist_sorted.csv
+<p>Let’s say we want to extract the annotations for just our differentially expressed genes (DGElist). First we have to <code>sort</code> each .csv file by column 1. Then, we can <code>join</code> by column 1 assuming col 1 contains ContigNames:</p>
+<pre class="bash"><code>sort -t , -k 1,1 DGElist.csv &gt; DGElist_sorted.csv
 sort -t , -k 1,1 big_annotation_file.csv &gt; big_annotation_file_sorted.csv
-join -j1 big_annotation_file_sorted.csv big_annotation_file_sorted.csv &gt; annot_DGE.csv</code></pre>
+join -j1 DGElist_sorted.csv big_annotation_file_sorted.csv &gt; annot_DGE.csv</code></pre>
 <p>Now we have a much smaller file (annot_DGE.csv) containing the annotations for our DGE list only!</p>
 </div>
-<div id="using-rstudio" class="section level2">
-<h2>Using RStudio</h2>
-<p>We’ve done all this in bash so far, but we can do the same join in RStudio. First, open RStudio and read in your .csv files:</p>
+<div id="using-r-or-rstudio" class="section level2">
+<h2>Using R or RStudio</h2>
+<p>We’ve done all this in bash so far, but we can do the same join in R or RStudio. First, open RStudio and read in your .csv files:</p>
 <ol style="list-style-type: decimal">
 <li>Read in 2 files into R</li>
 </ol>
