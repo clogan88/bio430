@@ -9,7 +9,7 @@ output: html_document
 
 To do this, we will take advantage of the `tidyverse` package in RStudio. You only need to install the package once, but you will need to load the library every time you open up RStudio on your computer. So, first install it using the `install.packages` command, then load the library using the command below:
 
-```{r setup, include=FALSE}
+```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
 library(tidyverse) # after install.packages("tidyverse")
 ```
 
@@ -18,27 +18,27 @@ The first thing we want to do is make sure the files we want to work with are in
 `sed 's/ \+/,/g' ifile.txt > ofile.csv`
 
 Example:
-```{bash}
+```{r, eval=FALSE, message = FALSE, warning = FALSE}
 sed 's/ \+/,/g' Exp5_CGH_Trinity_annotated.txt > Exp5_CGH_Trinity_annotated.csv
 ```
  
-Let's say we want to extract the annotations for just our differentially expressed genes (DGElist). Now if column 2 in our two files is the sameby column 1 in bash after sorting each file:
+Let's say we want to extract the annotations for just our differentially expressed genes (DGElist). We can do this in bash, but first we have to sort each file by column 1. Then, we can join by column 1 assuming col 1 contains ContigNames:
 
-```{bash}
+```{bash, eval=FALSE, message = FALSE, warning = FALSE}
 sort -t , -k 1,1 big_annotation_file.csv > DGElist_sorted.csv
 sort -t , -k 1,1 big_annotation_file.csv > big_annotation_file_sorted.csv
 join -j1 big_annotation_file_sorted.csv big_annotation_file_sorted.csv > annot_DGE.csv
 ```
  
-Now we have a much smaller file containing the annotations for our DGE list only!
+Now we have a much smaller file (annot_DGE.csv) containing the annotations for our DGE list only!
 
 Now, let's read in these files to RStudio
-```{r}
-annolist <- read_csv(annot_DGE.csv, header = TRUE, sep = ",")
-genelist <- read_csv(DGElist_sorted.csv.csv, header = TRUE, sep = ",")
+```{r read files, eval=FALSE, message = FALSE, warning = FALSE}
+annolist <- read_csv(annot_DGE.csv)
+genelist <- read_csv(DGElist_sorted.csv)
 ```
 
 Merge data into a single data frame
-```{r}
+```{r merge, eval=FALSE, message = FALSE, warning = FALSE}
 merged.data <- merge(genelist, annolist, by="ContigName")
 ```
