@@ -136,8 +136,8 @@ $(document).ready(function () {
 --transcripts /home/data/rockfish/assemblies/Copper_Trinity_LT.fasta --seqType fq \
 --samples_file /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo \
 --est_method RSEM --aln_method bowtie --trinity_mode \
---output_dir RSEM_Copper_Trinity_LT 
-</code></pre>
+--output_dir RSEM_Copper_Trinity_LT </code></pre>
+<p>The important output files from this step (<code>RSEM.genes.results</code>) will go into new directory called <code>RSEM_Copper_Trinity_LT</code> to keep them separate from those in the next step.</p>
 <ol start="2" style="list-style-type: decimal">
 <li>Second, map to the Copper gill Hypoxia de novo transcriptome</li>
 </ol>
@@ -145,14 +145,15 @@ $(document).ready(function () {
 --transcripts /home/data/rockfish/assemblies/CGH_Trinity_CL.fasta --seqType fq \
 --samples_file /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo \
 --est_method RSEM --prep_reference --aln_method bowtie --trinity_mode \
---output_dir CGH_Trinity_CL.fasta                               </code></pre>
+--output_dir RSEM_CGH_Trinity_CL                              </code></pre>
+<p>The mapping rates ranged from 85-91% for this assembly. The important output files from this step (<code>RSEM.genes.results</code>) will go into new directory called <code>RSEM_CGH_Trinity_CL</code> to keep them separate from those in step 1.</p>
 <div id="build-counts-matrix-and-perform-differential-expression-analysis" class="section level2">
 <h2>Build counts matrix and perform differential expression analysis</h2>
-<p>These steps need to be performed SEPARATELY using the output files from each assembly completed above.</p>
+<p>These following set of steps need to be performed SEPARATELY using the output files from each assembly completed above.</p>
 <ol style="list-style-type: decimal">
 <li>Build Transcript and Gene Expression Matrices</li>
 </ol>
-<p>note: can also make a file.listing_target_files.txt using <code>nano</code></p>
+<p>The input files for this next step are the <code>RSEM.genes.results</code> files for each sample. The program will create a single <code>counts.matrix</code> file that has the counts for each contig in the assembly accross ALL our samples.</p>
 <pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/util/abundance_estimates_to_matrix.pl \
 --est_method RSEM \
 --name_sample_by_basedir \
@@ -161,45 +162,51 @@ moderate_rep1/RSEM.genes.results moderate_rep2/RSEM.genes.results moderate_rep3/
 extreme_rep1/RSEM.genes.results extreme_rep2/RSEM.genes.results extreme_rep3/RSEM.genes.results extreme_rep4/RSEM.genes.results \
 relaxation_rep1/RSEM.genes.results relaxation_rep2/RSEM.genes.results relaxation_rep3/RSEM.genes.results relaxation_rep4/RSEM.genes.results \
 upwelling_rep1/RSEM.genes.results upwelling_rep2/RSEM.genes.results upwelling_rep3/RSEM.genes.results upwelling_rep4/RSEM.genes.results </code></pre>
+<p>The output files from this step are 1) a ‘counts.matrix’ file that is used for downstream analyses of differential expression, and 2) the TMM.EXPR.matrix file is used as the gene expression matrix in most other analyses. For information on the importance of TMM (or cross-sample normalization in general), see Robinson &amp; Oshlack, Genome Biology 2010 and Dillies et al., Brief Bioinf, 2012.</p>
 <ol start="2" style="list-style-type: decimal">
 <li>Compare Replicates</li>
 </ol>
 <pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 --matrix matrix.counts.matrix \
---samples samples_file --CPM --log2 \
+--samples /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo --CPM --log2 \
 --min_rowSums 10 \
 --compare_replicates</code></pre>
+<p>This allows us to compare replicates to one another.</p>
 <ol start="3" style="list-style-type: decimal">
 <li>Compare Replicates Across Samples</li>
 </ol>
 <pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
---matrix Trinity_trans.counts.matrix \
+--matrix matrix.counts.matrix \
 --min_rowSums 10 \
--s samples_file --log2 --CPM --sample_cor_matrix</code></pre>
+-s /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo \
+--log2 --CPM --sample_cor_matrix</code></pre>
+<p>This generates a correlation matrix across all samples.</p>
 <ol start="4" style="list-style-type: decimal">
 <li>Generate PCA Plot</li>
 </ol>
 <pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 --matrix matrix.counts.matrix \
--s samples_file \
+-s /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo \
 --min_rowSums 10 --log2 \
 --CPM --center_rows \
 --prin_comp 3 </code></pre>
+<p>This performs a principal components analysis and makes a plot to compare replicates.</p>
 <ol start="5" style="list-style-type: decimal">
 <li>Run Differential Gene Expression Analysis with edgeR</li>
 </ol>
+<p>Now to the fun part! Let’s run our differential expression analysis!</p>
 <pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/run_DE_analysis.pl  \
 --matrix matrix.counts.matrix \
 --method edgeR \
---samples_file samples_file</code></pre>
+--samples_file /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo</code></pre>
 <ol start="6" style="list-style-type: decimal">
 <li>Identify DE genes with p-val and fold change cut-off</li>
 </ol>
-<p>This step can be run multple times using different p-values and fold-change cut-offs</p>
+<p>This step can be run multple times using different p-values and fold-change cut-offs. Before you run this command, <code>cd</code> into the edgeR directory created in the last step.</p>
 <pre class="bash"><code>perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/analyze_diff_expr.pl \
---matrix /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/matrix.TMM.EXPR.matrix \
--P 0.001 \
--C 2 \
+--matrix /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/RSEM_CGH_Trinity_CL/matrix.TMM.EXPR.matrix \
+-P 0.05 \
+-C 1 \
 --samples /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file</code></pre>
 <ol start="7" style="list-style-type: decimal">
 <li>Download edgeR output files to personal computer</li>

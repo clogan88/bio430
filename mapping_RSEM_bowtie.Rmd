@@ -21,7 +21,7 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \
 --est_method RSEM --aln_method bowtie --trinity_mode \
 --output_dir RSEM_Copper_Trinity_LT 
 ```
-Make a new directory called `RSEM_Copper_Trinity_LT` and move the output files into this directory to keep them separate from those in step 2.
+The important output files from this step (`RSEM.genes.results`) will go into new directory called `RSEM_Copper_Trinity_LT` to keep them separate from those in the next step.
 
 2. Second, map to the Copper gill Hypoxia de novo transcriptome
 
@@ -30,15 +30,17 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/util/align_and_estimate_abundance.pl \
 --transcripts /home/data/rockfish/assemblies/CGH_Trinity_CL.fasta --seqType fq \
 --samples_file /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo \
 --est_method RSEM --prep_reference --aln_method bowtie --trinity_mode \
---output_dir CGH_Trinity_CL.fasta                               
+--output_dir RSEM_CGH_Trinity_CL                              
 ```
-The mapping rates ranged from 85-91% for this assembly. Make a new directory called `RSEM_CGH_Trinity_CL` and move the output files into this directory to keep them separate from those in step 1.
+The mapping rates ranged from 85-91% for this assembly. The important output files from this step (`RSEM.genes.results`) will go into new directory called `RSEM_CGH_Trinity_CL` to keep them separate from those in step 1.
 
 ## Build counts matrix and perform differential expression analysis
 
-These steps need to be performed SEPARATELY using the output files from each assembly completed above.
+These following set of steps need to be performed SEPARATELY using the output files from each assembly completed above.
 
 1. Build Transcript and Gene Expression Matrices
+
+The input files for this next step are the `RSEM.genes.results` files for each sample. The program will create a single `counts.matrix` file that has the counts for each contig in the assembly accross ALL our samples.
 
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/util/abundance_estimates_to_matrix.pl \
@@ -51,6 +53,9 @@ relaxation_rep1/RSEM.genes.results relaxation_rep2/RSEM.genes.results relaxation
 upwelling_rep1/RSEM.genes.results upwelling_rep2/RSEM.genes.results upwelling_rep3/RSEM.genes.results upwelling_rep4/RSEM.genes.results 
 ```
 
+The output files from this step are 1) a 'counts.matrix' file that is used for downstream analyses of differential expression, and 2) the TMM.EXPR.matrix file is used as the gene expression matrix in most other analyses. For information on the importance of TMM (or cross-sample normalization in general), see Robinson & Oshlack, Genome Biology 2010 and Dillies et al., Brief Bioinf, 2012.
+
+
 2. Compare Replicates
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
@@ -60,6 +65,8 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 --compare_replicates
 ```
 
+This allows us to compare replicates to one another. 
+
 3. Compare Replicates Across Samples
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
@@ -68,6 +75,8 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 -s /home/data/rockfish/EXP10_Scaur_fluct_gill/QC/samples_file_trimmo \
 --log2 --CPM --sample_cor_matrix
 ```
+
+This generates a correlation matrix across all samples.
 
 4. Generate PCA Plot
 ```{bash, eval=FALSE}
@@ -79,7 +88,12 @@ perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/PtR \
 --prin_comp 3 
 ```
 
+This performs a principal components analysis and makes a plot to compare replicates.
+
 5. Run Differential Gene Expression Analysis with edgeR
+
+Now to the fun part! Let's run our differential expression analysis!
+
 ```{bash, eval=FALSE}
 perl /opt/trinityrnaseq-Trinity-v2.4.0/Analysis/DifferentialExpression/run_DE_analysis.pl  \
 --matrix matrix.counts.matrix \
