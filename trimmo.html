@@ -130,6 +130,7 @@ $(document).ready(function () {
 <p>We will use Trimmomatic parameters based on MacManes et al. 2015:</p>
 <p>MacManes, M. D. (2014). On the optimal trimming of high-throughput mRNA sequence data. Frontiers in genetics, 5, 13.</p>
 <p>In the following example, we run Trimmomatic on ‘example using ’CLMP001A_S52_L005_R1_001.fastq’</p>
+<p>(we will run this script on treebeard server)</p>
 <pre class="bash"><code>java -jar /opt/Trimmomatic-0.35/trimmomatic-0.35.jar SE \               # call program using SE option
 -phred33 \                                                              # Illumina quality score
 CLMP001A_S52_L005_R1_001.fastq CLMP001A_S52_L005_R1_001_trimmo.fastq \  # input/output filenames
@@ -148,8 +149,8 @@ SLIDINGWINDOW:4:5 LEADING:5 TRAILING:5 MINLEN:25                        # poor q
 <p>Trimmomatic manual here: <a href="http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf" class="uri">http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf</a></p>
 <div id="run-trimmomatic-on-all-fastq-files-in-a-directory" class="section level2">
 <h2>Run Trimmomatic on all fastq files in a directory</h2>
-<p>(on treebeard server)</p>
-<p>We will will use a for loop in bash</p>
+<p>(this script will be run on treebeard server)</p>
+<p>We can use a for loop in bash to run trimmomatic on all the files ending in .fastq and appending the original file name with ‘.trimmo.fastq’</p>
 <pre class="bash"><code>for i in *.fastq;
 do
     echo working with &quot;$i&quot;
@@ -160,9 +161,20 @@ do
     SLIDINGWINDOW:4:5 LEADING:5 TRAILING:5 MINLEN:25 
 done;</code></pre>
 </div>
-<div id="please-cite-trimmomatic-as-follows" class="section level2">
-<h2>Please cite Trimmomatic as follows:</h2>
+<div id="fastqc" class="section level2">
+<h2>FASTQC</h2>
+<p>TO further inspect our files, we will now run fastqc on BOTH the raw and the trimmed files to see how they look and whether we removed all the adaptor sequence. More more info on this tool, go to their website:</p>
+<p><a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/" class="uri">https://www.bioinformatics.babraham.ac.uk/projects/fastqc/</a></p>
+<pre class="bash"><code>fastqc filename.fastq
+fastqc filename_trimmo.fastq</code></pre>
+<p>Let’s download the report files and view them on our laptops. We will use the <code>scp</code> command on a terminal window on our laptops to do this. Before you run this command, navigate the the folder on your computer where you want to download the files. Do not run this command on the server!</p>
+<pre class="bash"><code>scp otterID@treebeard.csumb.edu:/file/path/to/your.stuff/* .</code></pre>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
 <p>Bolger, A. M., Lohse, M., &amp; Usadel, B. (2014). Trimmomatic: a flexible trimmer for Illumina sequence data. Bioinformatics, 30(15), 2114-2120.</p>
+<p>MacManes, M. D. (2014). On the optimal trimming of high-throughput mRNA sequence data. Frontiers in genetics, 5, 13.</p>
+<p>Note: there is no citation for FASTQC, so please refer to their website in your reports (<a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/" class="uri">https://www.bioinformatics.babraham.ac.uk/projects/fastqc/</a>)</p>
 </div>
 </div>
 

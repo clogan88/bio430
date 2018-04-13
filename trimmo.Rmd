@@ -39,7 +39,7 @@ Trimmomatic manual here:
 ## Run Trimmomatic on all fastq files in a directory 
 (this script will be run on treebeard server)
 
-We will will use a for loop in bash
+We can use a for loop in bash to run trimmomatic on all the files ending in .fastq and appending the original file name with '.trimmo.fastq' 
 
 ```{bash, eval=FALSE}
 for i in *.fastq;
@@ -53,8 +53,28 @@ do
 done;
 ```
 
+## FASTQC
 
-## Please cite Trimmomatic as follows:
+TO further inspect our files, we will now run fastqc on BOTH the raw and the trimmed files to see how they look and whether we removed all the adaptor sequence. More more info on this tool, go to their website:
+
+https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
+
+```{bash, eval=FALSE}
+fastqc filename.fastq
+fastqc filename_trimmo.fastq
+```
+
+Let's download the report files and view them on our laptops. We will use the `scp` command on a terminal window on our laptops to do this. Before you run this command, navigate the the folder on your computer where you want to download the files. Do not run this command on the server!
+
+```{bash, eval=FALSE}
+scp otterID@treebeard.csumb.edu:/file/path/to/your.stuff/* .
+```
+
+## References
 
 Bolger, A. M., Lohse, M., & Usadel, B. (2014). Trimmomatic: a flexible trimmer for Illumina sequence data. Bioinformatics, 30(15), 2114-2120.
+
+MacManes, M. D. (2014). On the optimal trimming of high-throughput mRNA sequence data. Frontiers in genetics, 5, 13.
+
+Note: there is no citation for FASTQC, so please refer to their website  in your reports (https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 
