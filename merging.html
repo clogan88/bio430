@@ -153,8 +153,8 @@ join -j1 DGElist_sorted.csv big_annotation_file_sorted.csv &gt; annot_DGE.csv</c
 <ol style="list-style-type: decimal">
 <li>Read in 2 files into R</li>
 </ol>
-<pre class="r"><code>annolist &lt;- read_csv(annot_DGE.csv)
-genelist &lt;- read_csv(newgenelist.csv)</code></pre>
+<pre class="r"><code>annolist &lt;- read_csv(&quot;annot_DGE.csv&quot;)
+genelist &lt;- read_csv(&quot;newgenelist.csv&quot;)</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>Extract annotations from another gene list in RStudio using <code>join</code></li>
 </ol>

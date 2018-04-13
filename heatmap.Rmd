@@ -9,22 +9,12 @@ R code for Heatmaps (Copper Rockfish Gill)
 First, download the following packages:
 
 ```{r}
-source("http://bioconductor.org/biocLite.R")
-biocLite('edgeR')
-biocLite('DESeq')
-biocLite('ctc')
-biocLite('Biobase')
+library(tidyverse) # after install.packages('tidyverse')
+library(reshape2)  # after install.packages('reshape2')
+library(ggplot2)   # after install.packages('ggplot2')
 ```
 
 Install necessary packages and load libraries. You only need to install the packages once, but need to load the libraries every time you open up a new R session.
-
-Select USA (CA 2) for CRAN Mirror
-```{r}
-library('ape') # after install.packages('ape')
-library('gplots') # after install.packages('gplots')
-library('XLConnect')  # after install.packages('XLConnect')
-library('RColorBrewer')
-```
 
 Display working directory (equivalent of pwd in terminal)
 
@@ -35,34 +25,38 @@ getwd()
 Change the working directory to location of your expression data file
 
 ```{r}
-setwd("/Users/loga8761/Desktop/bio430")
+setwd("/Users/loga8761/Desktop")
 ```
 
 Load data
 ```{r}
-data = read_csv("diffExpr.P1e-3_C2.matrix.log2.centered.csv")
-data <- as.matrix(data) # convert to matrix
+data <- read_csv("diffExpr.P0.01_C1.matrix.log2.centered.csv")
 ```
 
-# Change parameters
+# need to reshape data into 2 columns before heatmap
 
-The following code is what makes the color key legend. For example, the code below is for a color key of range -2 to 2 (-2 to -1 is red (representing downregulation), -1 to 1 is black (representing upregulation),and 1, 2 is green (representing upregulation).
-
-```{r}
-colors = c(seq(-2,-1,length=100),seq(-1,1,length=100),seq(1,2,length=100))
-```
- 
-
-Set the color palette for the heatmap. These are the ones we've been using, but you can try other colors. For example, in some papers I've seen many blue, black, and yellow heatmaps which is easier to see for color-blind viewers.
-
-```{r}
-my_palette <- colorRampPalette(c("red", "black", "green"))(n = 299)
-```
+ContigName   treatment_rep expression_level
+1 GEN_A control_rep1       -0.5312459
+2 GEN_B control_rep1        3.4286519
+3 GEN_C control_rep1       -3.4287675
+4 GEN_D control_rep1       2.7277366
 
 Create a heatmap
 
 ```{r}
-heatmap.2(CopperSig, col=my_palette, breaks=colors, density.info="none", trace="none", dendrogram=c("row"), symm=F, symkey=T, symbreaks=T, scale="none", sepwidth=c(0,0), margins=c(7,18), Colv=F, lwid=c(0.7,2), lhei=c(1.1,4), cexRow=0.48)
+# Elaboration of heatmap (white - steelblue)
+
+ggplot(data, aes(y=ContigName)) +
+  geom_tile(aes(fill = expression_level), color = "white") +
+  scale_fill_gradient(low = "white", high = "steelblue") +
+  ylab("Genes ") +
+  xlab("Treatments") +
+  theme(legend.title = element_text(size = 10),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(size=16),
+        axis.title=element_text(size=14,face="bold"),
+        axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(fill = "Expression level")
 ```
 
 

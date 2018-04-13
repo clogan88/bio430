@@ -45,8 +45,8 @@ We've done all this in bash so far, but we can do the same join in R or RStudio.
 
 1. Read in 2 files into R
 ```{r read files, eval=FALSE, message = FALSE, warning = FALSE}
-annolist <- read_csv(annot_DGE.csv)
-genelist <- read_csv(newgenelist.csv)
+annolist <- read_csv("annot_DGE.csv")
+genelist <- read_csv("newgenelist.csv")
 ```
 
 2. Extract annotations from another gene list in RStudio using `join`
