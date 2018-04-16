@@ -41,12 +41,11 @@ ContigName   treatment_rep expression_level
 3 GEN_C     control_rep1       -3.4287675
 4 GEN_D     control_rep1       2.7277366
 
-Reshapte data
+Reshape data
 ```{r}
-test <- gather(data, "ContigName", 2:21)
-View(test)
+expr <- gather(data, "treatment","expr", 2:21)
+View(expr)
 ```
-
 
 
 Create a heatmap
