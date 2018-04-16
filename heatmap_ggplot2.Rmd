@@ -1,58 +1,45 @@
 ---
-title: "heatmap"
-author: "Cheryl"
+title: "heatmap_ggplot"
+author: "Cheryl Logan"
 date: "4/13/2018"
 output: html_document
 ---
-R code for Heatmaps (Copper Rockfish Gill)
+R code for making heatmaps in ggplot2
 
-First, download the following packages:
+Install necessary packages and load libraries. You only need to install the above packages once, but need to load the libraries every time you open up a new R session.
 
-```{r}
+```{r, eval = FALSE}
 library(tidyverse) # after install.packages('tidyverse')
 library(reshape2)  # after install.packages('reshape2')
 library(ggplot2)   # after install.packages('ggplot2')
 ```
 
-Install necessary packages and load libraries. You only need to install the packages once, but need to load the libraries every time you open up a new R session.
-
 Display working directory (equivalent of pwd in terminal)
 
-```{r}
+```{r, eval = FALSE}
 getwd()
 ```
 
 If necessary, change the working directory to location of your expression data file
-
-```{r}
+```{r, eval = FALSE}
 setwd("/Users/github/bio430")
 ```
 
-Load data
-```{r}
+Load expression data (log 2 centered)
+```{r, eval = FALSE}
 data <- read_csv("diffExpr.P0.01_C1.matrix.log2.centered.csv")
+head(data)
 ```
 
-# need to reshape data into 3 columns before heatmap
+Reshape data into 3 columns using `gather`
 
-ContigName   treatment_rep expression_level
-1 GEN_A     control_rep1       -0.5312459
-2 GEN_B     control_rep1        3.4286519
-3 GEN_C     control_rep1       -3.4287675
-4 GEN_D     control_rep1       2.7277366
-
-Reshape data
-```{r}
+```{r, eval = FALSE}
 df_heatmap <- gather(data, "treatment","expr", 2:21)
 head(df_heatmap)
 ```
+Make heatmap
 
-
-Create a heatmap
-
-```{r}
-# Elaboration of heatmap (white - steelblue)
-
+```{r, eval = FALSE}
 ggplot(df_heatmap, aes(x=treatment, y=ContigName)) +
   geom_tile(aes(fill = expr)) +
   scale_fill_gradient2(low="green", mid="black", high="red", midpoint=0, limits=c(-2,2)) +
