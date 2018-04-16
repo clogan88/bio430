@@ -22,10 +22,10 @@ Display working directory (equivalent of pwd in terminal)
 getwd()
 ```
 
-Change the working directory to location of your expression data file
+If necessary, change the working directory to location of your expression data file
 
 ```{r}
-setwd("/Users/loga8761/Desktop")
+setwd("/Users/github/bio430")
 ```
 
 Load data
@@ -36,10 +36,18 @@ data <- read_csv("diffExpr.P0.01_C1.matrix.log2.centered.csv")
 # need to reshape data into 2 columns before heatmap
 
 ContigName   treatment_rep expression_level
-1 GEN_A control_rep1       -0.5312459
-2 GEN_B control_rep1        3.4286519
-3 GEN_C control_rep1       -3.4287675
-4 GEN_D control_rep1       2.7277366
+1 GEN_A     control_rep1       -0.5312459
+2 GEN_B     control_rep1        3.4286519
+3 GEN_C     control_rep1       -3.4287675
+4 GEN_D     control_rep1       2.7277366
+
+Reshapte data
+```{r}
+test <- gather(data, "ContigName", 2:21)
+View(test)
+```
+
+
 
 Create a heatmap
 
@@ -57,6 +65,12 @@ ggplot(data, aes(y=ContigName)) +
         axis.title=element_text(size=14,face="bold"),
         axis.text.x = element_text(angle = 90, hjust = 1)) +
   labs(fill = "Expression level")
+```
+
+Reshapte data
+```{r}
+test <- gather(data, "ContigName", "expression", 2:21)
+View(test)
 ```
 
 
