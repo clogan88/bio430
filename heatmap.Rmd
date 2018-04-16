@@ -43,8 +43,8 @@ ContigName   treatment_rep expression_level
 
 Reshape data
 ```{r}
-expr <- gather(data, "treatment","expr", 2:21)
-View(expr)
+df_heatmap <- gather(data, "treatment","expr", 2:21)
+View(df_heatmap)
 ```
 
 
@@ -53,8 +53,8 @@ Create a heatmap
 ```{r}
 # Elaboration of heatmap (white - steelblue)
 
-ggplot(data, aes(y=ContigName)) +
-  geom_tile(aes(fill = expression_level), color = "white") +
+ggplot(df_heatmap, aes(x=treatment, y=ContigName)) +
+  geom_tile(aes(fill = expr), color = "white") +
   scale_fill_gradient(low = "white", high = "steelblue") +
   ylab("Genes ") +
   xlab("Treatments") +
@@ -63,7 +63,7 @@ ggplot(data, aes(y=ContigName)) +
         plot.title = element_text(size=16),
         axis.title=element_text(size=14,face="bold"),
         axis.text.x = element_text(angle = 90, hjust = 1)) +
-  labs(fill = "Expression level")
+  labs(fill = "Log2 Fold Change")
 ```
 
 Reshapte data
