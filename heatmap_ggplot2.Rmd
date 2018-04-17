@@ -4,7 +4,7 @@ author: "Cheryl Logan"
 date: "4/13/2018"
 output: html_document
 ---
-R code for making heatmaps in ggplot2
+## Make a heatmap in ggplot2
 
 Install necessary packages and load libraries. You only need to install the above packages once, but need to load the libraries every time you open up a new R session.
 
@@ -12,6 +12,7 @@ Install necessary packages and load libraries. You only need to install the abov
 library(tidyverse) # after install.packages('tidyverse')
 library(reshape2)  # after install.packages('reshape2')
 library(ggplot2)   # after install.packages('ggplot2')
+library(ggdendro)   # after install.packages('ggdendro')
 ```
 
 Display working directory (equivalent of pwd in terminal)
@@ -25,34 +26,90 @@ If necessary, change the working directory to location of your expression data f
 setwd("/Users/github/bio430")
 ```
 
-Load expression data (log 2 centered)
-```{r, eval = FALSE}
+Load expression data (always use the log2 centered data)
+```{r, }
 data <- read_csv("diffExpr.P0.01_C1.matrix.log2.centered.csv")
 head(data)
 ```
 
-Reshape data into 3 columns using `gather`
+Reshape data into 3 columns using `melt`
 
-```{r, eval = FALSE}
-df_heatmap <- gather(data, "treatment","expr", 2:21)
+```{r, }
+df_heatmap <- melt(data)
+names(df_heatmap)[c(1:3)] <- c("contig","treatment","expr")
 head(df_heatmap)
 ```
+
 Make heatmap
 
-```{r, eval = FALSE}
-ggplot(df_heatmap, aes(x=treatment, y=ContigName)) +
+```{r,}
+ggplot(df_heatmap, aes(x=treatment, y=contig)) +
   geom_tile(aes(fill = expr)) +
-  scale_fill_gradient2(low="green", mid="black", high="red", midpoint=0, limits=c(-2,2)) +
-  ylab("Genes ") +
-  xlab("Treatments") +
+  scale_fill_gradient2(low="green", mid="black", high="red", midpoint=0,    limits=c(-2,2)) + # change color scale min/max
+  ylab("Genes") +
+  xlab("Treatment") +
+  ggtitle("Differential gene expression in gill tissue") +
   theme(legend.title = element_text(size = 10),
         legend.text = element_text(size = 12),
-        plot.title = element_text(size=16),
-        axis.title=element_text(size=14,face="bold"),
-        axis.text.x = element_text(angle = 90, hjust = 1)) +
+        plot.title = element_text(size=10),
+        axis.title = element_text(size=14,face="bold"),
+        axis.text.x = element_text(angle = 90, hjust = 1),
+        axis.text.y = element_blank()) +  # turn gene names off
   labs(fill = "Log2 Fold Change")
+
+```
+## Clustered heatmap
+
+Now, let's cluster gene expression profiles to make it easier to look for patterns
+```{r}
+dat <- data[,2:21]  # numerical columns
+head(dat)
+
+genenames <- data[,1]
+head(genenames)
+
+row.order <- hclust(dist(dat))$order # clustering
+col.order <- hclust(dist(t(dat)))$order
+dat_new <- dat[row.order, col.order] # re-order matrix accoring to clustering
+head(dat_new)
+head(rownames)
 ```
 
-For additional info about how to modify this input:
+Reshape clustered data into 3 columns using `melt`
+
+```{r, }
+clust_heatmap <- melt(dat_new)
+names(clust_heatmap)[c(1:2)] <- c("treatment","expr")
+head(clust_heatmap)
+```
+
+Make clustered heatmap
+
+```{r,}
+ggplot(clust_heatmap, aes(x=treatment)) +
+  geom_tile(aes(fill = expr)) +
+  scale_fill_gradient2(low="green", mid="black", high="red", midpoint=0,    limits=c(-2,2)) + # change color scale min/max
+  ylab("Genes") +
+  xlab("Treatment") +
+  ggtitle("Differential gene expression in gill tissue") +
+  theme(legend.title = element_text(size = 10),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(size=10),
+        axis.title = element_text(size=14,face="bold"),
+        axis.text.x = element_text(angle = 90, hjust = 1),
+        axis.text.y = element_blank()) +  # turn gene names off
+  labs(fill = "Log2 Fold Change")
+
+```
+
+Save the plot as a .png file
+```{r}
+ggsave("heatmap.png",width=5,height =5)
+```
+
+For additional info about how to modify your heatmaps:
 
 http://databiomics.com/how-to-create-a-fast-and-easy-heatmap-with-ggplot2/
+https://jcoliver.github.io/learn-r/008-ggplot-dendrograms-and-heatmaps.html
+http://swarchal.github.io/pages/2015/11/25/heatmap-ggplot/
+
