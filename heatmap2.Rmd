@@ -22,7 +22,7 @@ if (!require("RColorBrewer")) {
  
 ```{r, eval = FALSE}
 library(tidyverse) # after install.packages('tidyverse')
-library(reshape2)  # after install.packages('reshape2')
+library(reshape2)  # afteinstall.packages('reshape2')
 library(ggplot2)   # after install.packages('ggplot2')
 ```
 
@@ -40,7 +40,8 @@ setwd("/Users/github/bio430")
 Load expression data (log 2 centered)
 ```{r, eval = FALSE}
 data <- read_csv("diffExpr.P0.01_C1.matrix.log2.centered.csv")
-data <- as.matrix(data) # convert to matrix
+rnames <- data[,1]   # assign labels in column 1 to "rnames"
+data <- as.matrix(data[,-1]) # convert to matrix
 is.matrix(data)
 head(data)
 ```
@@ -62,9 +63,19 @@ my_palette <- colorRampPalette(c("red", "black", "green"))(n = 299)
 Create your heatmap
 
 ```{r}
-heatmap.2(data, col=my_palette, breaks=colors, density.info="none", trace="none", dendrogram=c("row"), symm=F, symkey=T, symbreaks=T, scale="none", sepwidth=c(0,0), margins=c(7,18), Colv=F, lwid=c(0.7,2), lhei=c(1.1,4), cexRow=0.48)
+heatmap.2(data,
+  cellnote = data,  # same data set for cell labels
+  main = "Correlation", # heat map title
+  notecol="black",      # change font color of cell labels to black
+  density.info="none",  # turns off density plot inside color legend
+  trace="none",         # turns off trace lines inside the heat map
+  margins =c(5,5),     # widens margins around plot
+  col=my_palette,       # use on color palette defined earlier
+  dendrogram="row",     # only draw a row dendrogram
+  Colv="NA")            # turn off column clustering 
 ```
-
+more here:
+http://sebastianraschka.com/Articles/heatmaps_in_r.html
 
 PARAMETERS:
 
