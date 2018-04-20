@@ -151,14 +151,14 @@ join -j1 DGElist_sorted.csv big_annotation_file_sorted.csv &gt; annot_DGE.csv</c
 <h2>Using R or RStudio</h2>
 <p>We’ve done all this in bash so far, but we can do the same join in R or RStudio. First, open RStudio and read in your .csv files:</p>
 <ol style="list-style-type: decimal">
-<li>Read in 2 files into R</li>
+<li>Read in 2 files into R and assign them to <code>annolist</code> and <code>genelist</code></li>
 </ol>
 <pre class="r"><code>genelist &lt;- read_csv(&quot;/Users/loga8761/Desktop/DGE_list.csv&quot;)
 annolist &lt;- read_csv(&quot;/Users/loga8761/Desktop/anno_diffExpr.P0.01_C1.matrix.log2.centered.csv&quot;)</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>View the files to make sure the header for the contig names are identical.</li>
 </ol>
-<pre class="r"><code>head(annolist)
+<pre class="r"><code>head(annolist) # quick view of top of annolist
 head(genelist)</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>Extract annotations from another gene list in RStudio using <code>join</code></li>
@@ -168,9 +168,9 @@ head(genelist)</code></pre>
 <li>View the new merged file containing only the annotations for your gene list of interest. Take a look at the new file dimensions and contents to make sure the join worked</li>
 </ol>
 <pre class="r"><code>head(merged)
-dim(merged)</code></pre>
+dim(merged) # get file dimensions</code></pre>
 <p>There are only 23 genes in our gene list but 55 in our merged file. What is going on? Use head to inspect the list. Do you see any duplicate ContigNames in the merged list? We want to find the top hit with the lowest eval for each contig. We will do this iteratively on the nr evalue, then the uniprot evalue, then the longest contig. After this, we should have a table that has the same number of rows as our gene list of interest!</p>
-<pre class="r"><code>unique &lt;- merged %&gt;%
+<pre class="r"><code>unique &lt;- merged %&gt;% # create new variable called unique
   group_by(ContigName) %&gt;%
   filter(topnrEvalue == min(topnrEvalue)) %&gt;%
   filter(evalue == min(evalue)) %&gt;%

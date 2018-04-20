@@ -43,7 +43,7 @@ Now we have a much smaller file (annot_DGE.csv) containing the annotations for o
 
 We've done all this in bash so far, but we can do the same join in R or RStudio. First, open RStudio and read in your .csv files:
 
-1. Read in 2 files into R
+1. Read in 2 files into R and assign them to `annolist` and `genelist`
 ```{r read files, eval=FALSE, message = FALSE, warning = FALSE}
 genelist <- read_csv("/Users/loga8761/Desktop/DGE_list.csv")
 annolist <- read_csv("/Users/loga8761/Desktop/anno_diffExpr.P0.01_C1.matrix.log2.centered.csv")
@@ -52,7 +52,7 @@ annolist <- read_csv("/Users/loga8761/Desktop/anno_diffExpr.P0.01_C1.matrix.log2
 2. View the files to make sure the header for the contig names are identical. 
 
 ```{r, eval=FALSE}
-head(annolist)
+head(annolist) # quick view of top of annolist
 head(genelist)
 ```
 
@@ -65,13 +65,13 @@ merged <- left_join(genelist, annolist, by = "ContigName")
 
 ```{r, eval=FALSE}
 head(merged)
-dim(merged)
+dim(merged) # get file dimensions
 ```
 
 There are only 23 genes in our gene list but 55 in our merged file. What is going on? Use head to inspect the list. Do you see any duplicate ContigNames in the merged list? We want to find the top hit with the lowest eval for each contig. We will do this iteratively on the nr evalue, then the uniprot evalue, then the longest contig. After this, we should have a table that has the same number of rows as our gene list of interest!
 
 ```{r, eval=FALSE}
-unique <- merged %>%
+unique <- merged %>% # create new variable called unique
   group_by(ContigName) %>%
   filter(topnrEvalue == min(topnrEvalue)) %>%
   filter(evalue == min(evalue)) %>%
