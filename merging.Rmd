@@ -45,13 +45,34 @@ We've done all this in bash so far, but we can do the same join in R or RStudio.
 
 1. Read in 2 files into R
 ```{r read files, eval=FALSE, message = FALSE, warning = FALSE}
-annolist <- read_csv("annot_DGE.csv")
-genelist <- read_csv("newgenelist.csv")
+genelist <- read_csv("/Users/loga8761/Desktop/DGE_list.csv")
+annolist <- read_csv("/Users/loga8761/Desktop/anno_diffExpr.P0.01_C1.matrix.log2.centered.csv")
 ```
 
-2. Extract annotations from another gene list in RStudio using `join`
+2. View the files to make sure the header for the contig names are identical. 
+
+```{r}
+head(annolist)
+head(genelist)
+```
+
+3. Extract annotations from another gene list in RStudio using `join`
 ```{r merge, eval=FALSE, message = FALSE, warning = FALSE}
-merged <- left_join(newgenelist, annolist, by = "ContigName") 
+merged <- left_join(genelist, annolist, by = "ContigName") 
+```
+
+4. View the new merged file containing only the annotations for your gene list of interest. Take a look at the new file dimensions and contents to make sure the join worked
+
+```{r}
+head(merged)
+dim(merged)
+```
+
+There are only 17 genes in our gene list but 55 in our merged file. If you inspect the merged list you also see that some of the Contig names are duplicated. We want to find the top hit with the lowest eval for each contig.
+
+```{r}
+unique <- merged %>%
+  group_by(ContigName)
 ```
 
 Now, we've essentally done the same thing in R as we did in bash, but in R we don't have to sort before we join. 
