@@ -59,6 +59,7 @@ ggplot(df_heatmap, aes(x=treatment, y=contig)) +
 
 ```
 ## Clustered heatmap
+(YOU DO NEED NEED TO DO THIS YET! WILL NOT BE ON QUIZ)
 
 Now, let's cluster gene expression profiles to make it easier to look for patterns
 ```{r}

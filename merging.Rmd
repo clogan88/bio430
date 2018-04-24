@@ -9,7 +9,7 @@ output: html_document
 
 To do this in R or RStudio, we will take advantage of the `tidyverse` package. You only need to install the package once, but you will need to load the library every time you open up R or RStudio on your computer. So, first install it using the `install.packages` command, then load the library using the command below:
 
-```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
+```{r setup, message = FALSE, warning = FALSE}
 library(tidyverse) # after install.packages("tidyverse")
 ```
 
@@ -22,16 +22,22 @@ We've done all this in bash so far, but we can do the same join in R or RStudio.
 genelist <- read_csv("/Users/loga8761/Desktop/matrix.counts.matrix.control_vs_relaxation.edgeR.DE_results.P0.01_C1.DE.subset.csv")
 annolist <- read_csv("/Users/loga8761/Desktop/anno_diffExpr.P0.01_C1.matrix.log2.centered.csv")
 ```
+A few definitions/reminders before we go further:
+- data frame will be abbreviated as df; you can think of a df as a table
+- the symbol `%>%` is a pipe in R (similar to | in bash)
+- the symbol `<-` is how we name a new df after performing some function
+- Use your "Data Wrangling" cheatsheet as you read through the code
+
 
 2. View header row of each file to make sure the contig names are identical. In our case, the first column in both files should be called `ContigName`.
 
 ```{r, eval=FALSE}
-head(annolist) 
+head(annolist) # view top of file
 head(genelist)
 ```
 3. Once you confirm the column header is the same for both data frames, extract your `genelist` annotations from `annolist` the `right_join` function.
 ```{r merge, eval=FALSE, message = FALSE, warning = FALSE}
-merged <- right_join(annolist,genelist, by = "ContigName") 
+merged <- right_join(annolist,genelist, by = "ContigName")  # merge 2 files
 head(merged)
 ```
 
@@ -39,14 +45,14 @@ head(merged)
 
 ```{r, eval=FALSE}
 head(merged)
-dim(merged) # get file dimensions
+dim(merged) # get df dimensions (e.g., number of rows and columns)
 ```
 
 # Filtering on a merged data frame
 
 There are only 546 rows in `merged` but only 463 in `genelist`! What is going on? Use `head` to inspect the list. Do you see any duplicate ContigNames in `merged`? Yes, we do. Let's quantify  how many times each ContigName appears in `merged` using the `count` function
 ```{r, eval=FALSE}
-merged %>% count(ContigName)
+merged %>% count(ContigName) #count number of ContigNames in `merged`
 ```
 
 We now see that several ContigNames appear multiple times. These represent different isoforms of the same Contig in the assembly file used to create the annotation file. To simplify our downstream analysis, let's try to build a data frame with only one annotation per gene in `genelist`. 
@@ -55,9 +61,9 @@ Let's start by identifying the isoform with the lowest e-value based on BLAST re
 
 ```{r, eval=FALSE}
 unique <- merged %>% # create new variable called unique
-  group_by(ContigName) %>%
-  filter(topnrEvalue == min(topnrEvalue)) %>%
-  filter(ContigLength == max(ContigLength)) %>%
+  group_by(ContigName) %>% # group by ContigName
+  filter(topnrEvalue == min(topnrEvalue)) %>%  # get contig with the lowest evalue
+  filter(ContigLength == max(ContigLength)) %>% # get longest contig if no evalue
 ungroup(merged)
 
 # use count to see if there are any duplicates left
@@ -89,15 +95,15 @@ genelist_annos <- merged %>% # create new variable called unique
   group_by(ContigName) %>%
   filter(topnrEvalue == min(topnrEvalue)) %>%
   filter(ContigLength == max(ContigLength)) %>%
-  filter(!grepl("No_sig_nr_hit",topnrMatch)) %>%
+  filter(!grepl("No_sig_nr_hit",topnrMatch)) %>% # remove contigs with no annotation
 ungroup(merged)
 
-nrow(genelist_annos) # number of rows
+nrow(genelist_annos) # get number of rows
 ```
 Of the 463 contigs in `genelist`, it looks like we have annotations for 322 of them (almost 70%... not bad!). As you are scanning through your annotations, I suggest using the 'nobadwordsnrmatch' column match which includes the top hit for which there was a gene name that is more understandable. Let save this as a new .csv file to your current working directory
 
 ```{r, eval=FALSE}
-write_csv(genelist_annos, "genelist_annos.csv")
+write_csv(genelist_annos, "genelist_annos.csv") # save df as a .csv
 ```
 
 
@@ -109,11 +115,11 @@ One more step while we are here. Let's go ahead and pull out a list of UniProt I
 
 ```{r, eval=FALSE}
 genelist_uniprot <- genelist_annos %>% # create new variable called unique
-  group_by(ContigName) %>%
-  filter(!grepl("No_Uniprotmatch",Uniprotmatch)) %>%
+  group_by(ContigName) %>% # group by ContigName
+  filter(!grepl("No_Uniprotmatch",Uniprotmatch)) %>% # remove rows wo Uniprot hit
 ungroup(genelist_annos)
 
-nrow(genelist_uniprot) # number of rows
+nrow(genelist_uniprot) # get number of rows in new df
 ```
 We see that 260/463 (56%) contigs in `genelist` have UniProt IDs. Not bad. To see how many of Uniprot IDs are unique and to extract a list of them, we can use `count`. 
 
@@ -131,6 +137,7 @@ write_csv(genelist_uniprot_unique, "genelist_uniprot_unique.csv")
 ```
 
 ## Using bash to merge files
+(YOU DO NOT NEED TO DO THIS- FOR REFEENCE ONLY)
 
 1. Convert .txt files to .csv files in bash
 

@@ -128,6 +128,7 @@ $(document).ready(function () {
 <div id="extracting-annotations-for-your-gene-list-of-interest" class="section level2">
 <h2>Extracting annotations for your gene list of interest</h2>
 <p>To do this in R or RStudio, we will take advantage of the <code>tidyverse</code> package. You only need to install the package once, but you will need to load the library every time you open up R or RStudio on your computer. So, first install it using the <code>install.packages</code> command, then load the library using the command below:</p>
+<pre class="r"><code>library(tidyverse) # after install.packages(&quot;tidyverse&quot;)</code></pre>
 </div>
 <div id="using-r-or-rstudio-to-merge-two-files" class="section level2">
 <h2>Using R or RStudio to merge two files</h2>
@@ -137,32 +138,33 @@ $(document).ready(function () {
 </ol>
 <pre class="r"><code>genelist &lt;- read_csv(&quot;/Users/loga8761/Desktop/matrix.counts.matrix.control_vs_relaxation.edgeR.DE_results.P0.01_C1.DE.subset.csv&quot;)
 annolist &lt;- read_csv(&quot;/Users/loga8761/Desktop/anno_diffExpr.P0.01_C1.matrix.log2.centered.csv&quot;)</code></pre>
+<p>A few definitions/reminders before we go further: - data frame will be abbreviated as df; you can think of a df as a table - the symbol <code>%&gt;%</code> is a pipe in R (similar to | in bash) - the symbol <code>&lt;-</code> is how we name a new df after performing some function - Use your “Data Wrangling” cheatsheet as you read through the code</p>
 <ol start="2" style="list-style-type: decimal">
 <li>View header row of each file to make sure the contig names are identical. In our case, the first column in both files should be called <code>ContigName</code>.</li>
 </ol>
-<pre class="r"><code>head(annolist) 
+<pre class="r"><code>head(annolist) # view top of file
 head(genelist)</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>Once you confirm the column header is the same for both data frames, extract your <code>genelist</code> annotations from <code>annolist</code> the <code>right_join</code> function.</li>
 </ol>
-<pre class="r"><code>merged &lt;- right_join(annolist,genelist, by = &quot;ContigName&quot;) 
+<pre class="r"><code>merged &lt;- right_join(annolist,genelist, by = &quot;ContigName&quot;)  # merge 2 files
 head(merged)</code></pre>
 <ol start="4" style="list-style-type: decimal">
 <li>View the new <code>merged</code> data frame containing only the annotations for your <code>genelist</code> of interest. Take a look at the new file dimensions and contents using <code>dim</code> and <code>head</code> to make sure the join worked!</li>
 </ol>
 <pre class="r"><code>head(merged)
-dim(merged) # get file dimensions</code></pre>
+dim(merged) # get df dimensions (e.g., number of rows and columns)</code></pre>
 </div>
 <div id="filtering-on-a-merged-data-frame" class="section level1">
 <h1>Filtering on a merged data frame</h1>
 <p>There are only 546 rows in <code>merged</code> but only 463 in <code>genelist</code>! What is going on? Use <code>head</code> to inspect the list. Do you see any duplicate ContigNames in <code>merged</code>? Yes, we do. Let’s quantify how many times each ContigName appears in <code>merged</code> using the <code>count</code> function</p>
-<pre class="r"><code>merged %&gt;% count(ContigName)</code></pre>
+<pre class="r"><code>merged %&gt;% count(ContigName) #count number of ContigNames in `merged`</code></pre>
 <p>We now see that several ContigNames appear multiple times. These represent different isoforms of the same Contig in the assembly file used to create the annotation file. To simplify our downstream analysis, let’s try to build a data frame with only one annotation per gene in <code>genelist</code>.</p>
 <p>Let’s start by identifying the isoform with the lowest e-value based on BLAST results against the nr database. We can using the <code>filter</code> function to find the contig with the lowest e-value (best hit). Since some ContigNames have ‘no_sig_hit’ they won’t have an e-value to filter on. So, let’s also use <code>filter</code> to extract only the longest contig when there is ‘no_sig_hit’.</p>
 <pre class="r"><code>unique &lt;- merged %&gt;% # create new variable called unique
-  group_by(ContigName) %&gt;%
-  filter(topnrEvalue == min(topnrEvalue)) %&gt;%
-  filter(ContigLength == max(ContigLength)) %&gt;%
+  group_by(ContigName) %&gt;% # group by ContigName
+  filter(topnrEvalue == min(topnrEvalue)) %&gt;%  # get contig with the lowest evalue
+  filter(ContigLength == max(ContigLength)) %&gt;% # get longest contig if no evalue
 ungroup(merged)
 
 # use count to see if there are any duplicates left
@@ -185,23 +187,23 @@ head(missing_merged)</code></pre>
   group_by(ContigName) %&gt;%
   filter(topnrEvalue == min(topnrEvalue)) %&gt;%
   filter(ContigLength == max(ContigLength)) %&gt;%
-  filter(!grepl(&quot;No_sig_nr_hit&quot;,topnrMatch)) %&gt;%
+  filter(!grepl(&quot;No_sig_nr_hit&quot;,topnrMatch)) %&gt;% # remove contigs with no annotation
 ungroup(merged)
 
-nrow(genelist_annos) # number of rows</code></pre>
+nrow(genelist_annos) # get number of rows</code></pre>
 <p>Of the 463 contigs in <code>genelist</code>, it looks like we have annotations for 322 of them (almost 70%… not bad!). As you are scanning through your annotations, I suggest using the ‘nobadwordsnrmatch’ column match which includes the top hit for which there was a gene name that is more understandable. Let save this as a new .csv file to your current working directory</p>
-<pre class="r"><code>write_csv(genelist_annos, &quot;genelist_annos.csv&quot;)</code></pre>
+<pre class="r"><code>write_csv(genelist_annos, &quot;genelist_annos.csv&quot;) # save df as a .csv</code></pre>
 <p>Once you are ready to learn more about a particular gene, copy the Uniprot ID from the Uniprotmatch column and paste it into <a href="http://www.uniprot.org/" class="uri">http://www.uniprot.org/</a> search bar.</p>
 </div>
 <div id="extract-unique-uniprot-ids" class="section level1">
 <h1>Extract unique Uniprot IDs</h1>
 <p>One more step while we are here. Let’s go ahead and pull out a list of UniProt IDs for those contigs that have them.</p>
 <pre class="r"><code>genelist_uniprot &lt;- genelist_annos %&gt;% # create new variable called unique
-  group_by(ContigName) %&gt;%
-  filter(!grepl(&quot;No_Uniprotmatch&quot;,Uniprotmatch)) %&gt;%
+  group_by(ContigName) %&gt;% # group by ContigName
+  filter(!grepl(&quot;No_Uniprotmatch&quot;,Uniprotmatch)) %&gt;% # remove rows wo Uniprot hit
 ungroup(genelist_annos)
 
-nrow(genelist_uniprot) # number of rows</code></pre>
+nrow(genelist_uniprot) # get number of rows in new df</code></pre>
 <p>We see that 260/463 (56%) contigs in <code>genelist</code> have UniProt IDs. Not bad. To see how many of Uniprot IDs are unique and to extract a list of them, we can use <code>count</code>.</p>
 <pre class="r"><code>genelist_uniprot_unique &lt;- genelist_uniprot %&gt;%
   select(&quot;ContigName&quot;,Uniprotmatch) %&gt;%
@@ -211,6 +213,7 @@ ungroup(genelist_uniprot)</code></pre>
 <pre class="r"><code>write_csv(genelist_uniprot_unique, &quot;genelist_uniprot_unique.csv&quot;)</code></pre>
 <div id="using-bash-to-merge-files" class="section level2">
 <h2>Using bash to merge files</h2>
+<p>(YOU DO NOT NEED TO DO THIS- FOR REFEENCE ONLY)</p>
 <ol style="list-style-type: decimal">
 <li>Convert .txt files to .csv files in bash</li>
 </ol>
